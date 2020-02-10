@@ -6,8 +6,8 @@ To set up the backend, from the folder "Minneapolis Restaurant Backend":
 
   1) Create config.py in the "Minneapolis Restaurant Backend" which includes, at minimum:
 
-      api_key={your yelp api key}
-      google_key={your google api key}
+      api_key = {your yelp api key}
+      google_key = {your google api key}
       username = {your postgreSQL username}
       password = {your postgreSQL password}
 
