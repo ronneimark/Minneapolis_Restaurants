@@ -29,33 +29,33 @@ fetch('/health_data')
 
   var ratingStatusCode;
   var ratingCount = {
-    Rating5: 0,
-    Rating4_5: 0,
-    Rating4: 0,
-    Rating3_5: 0,
-    Rating3under:0
+    inspections7: 0,
+    inspections6: 0,
+    inspections5: 0,
+    inspections4: 0,
+    inspections3:0
   };
 
   var reviewsStatusCode;
   var reviewCount = {
-    Reviews300plus:0,
+    Reviews10plus:0,
     ReviewsUnder300:0
   };
 
   for(i=0; i < myJson.length; i++) {
       
     // var magnitude = Object.assign({}, data.features[i].properties.mag);
-    var rating = myJson[i].rating;
+    var rating = myJson[i].dateofinspection.length;
     var reviews = myJson[i].reviews;
-
-    if (rating >= 5){ratingStatusCode = "Rating5"; color = "red";} 
-    else if (rating >= 4.5){ratingStatusCode = "Rating4_5"; color = "orange";} 
-    else if (rating >= 4){ratingStatusCode = "Rating4"; color = "gold";}
-    else if (rating >= 3.5){ratingStatusCode = "Rating3_5"; color = "violet";}
-    else {ratingStatusCode = "Rating3under"; color = "blue"}
+    if (rating >= 7){ratingStatusCode = "inspections7"; color = "red";} 
+    else if (rating >= 6){ratingStatusCode = "inspections6"; color = "orange";} 
+    else if (rating >= 6){ratingStatusCode = "inspections6"; color = "orange";} 
+    else if (rating >= 5){ratingStatusCode = "inspections5"; color = "gold";}
+    else if (rating >= 4){ratingStatusCode = "inspections4"; color = "violet";}
+    else {ratingStatusCode = "inspections3"; color = "black"}
     ratingCount[ratingStatusCode]++;
 
-    if (reviews >= 300){reviewsStatusCode = "Reviews300plus"; icon = 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-' + color + '.png';}
+    if (rating >= 10){reviewsStatusCode = "Reviews10plus"; icon = 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-' + color + '.png';}
     else {reviewsStatusCode = "ReviewsUnder300"; icon = 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-' + color + '.png';};
     reviewCount[reviewsStatusCode]++;
 
@@ -80,27 +80,30 @@ fetch('/health_data')
   console.log(ratingCount)
   console.log(reviewCount)
 
-  // L.Control.legend = L.Control.extend({
-  //   onAdd: function(map) {
+  L.Control.legend = L.Control.extend({
+    onAdd: function(map) {
       
-  //     var legend = L.DomUtil.create('div');
-  //     legend.id = "legend";
-  //     legend.innerHTML = [
-  //       "<table><tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',alt='Red'/></td><td><strong>Rating of 5</strong></td><td align='right'>(" + ratingCount.Rating5 +")</td></tr>",
-  //       "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',alt='Orange'/></td><td><strong>Rating of 4.5</strong></td><td align='right'>(" + ratingCount.Rating4_5 +")</td></tr>",
-  //       "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-gold.png',alt='Gold'/></td><td><strong>Rating of 4</strong></td><td align='right'>(" + ratingCount.Rating4 +")</td></tr>",
-  //       "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',alt='Purple'/></td><td><strong>Rating of 3.5</strong></td><td align='right'>(" + ratingCount.Rating3_5 +")</td></tr>",
-  //       "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-black.png',alt='Black'/></td><td><strong>Rating 3 or less</strong></td><td align='right'>(" + ratingCount.Rating3under +")</td></tr>",
-  //       "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png',alt='Big'/></td><td><strong>300+ Reviews</strong></td><td align='right'>(" + reviewCount.Reviews300plus +")</td></tr>",
-  //       "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png',alt='Small'/></td><td><strong>Under 300 Reviews</strong></td><td align='right'>(" + reviewCount.ReviewsUnder300 +")</td></tr></table>"
-  //     ].join("");
-  //     return legend;
-  //   },
+      var legend = L.DomUtil.create('div');
+      legend.id = "legend";
+      legend.innerHTML = [
+        "<h5><strong><u><center>Inspections since 2017</center></u></strong></h>",
+        "<table><tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',alt='Red'/></td><td><strong>10+ Inspections</strong></td><td align='right'>(" + reviewCount.Reviews10plus +")</td></tr>",
+        "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',alt='Red'/></td><td><strong>7+ Inspections</strong></td><td align='right'>(" + ratingCount.inspections7 +")</td></tr>",
+        "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',alt='Orange'/></td><td><strong>6 Inspections</strong></td><td align='right'>(" + ratingCount.inspections6 +")</td></tr>",
+        "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-gold.png',alt='Gold'/></td><td><strong>5 Inspections</strong></td><td align='right'>(" + ratingCount.inspections5 +")</td></tr>",
+        "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',alt='Purple'/></td><td><strong>4 Inspections</strong></td><td align='right'>(" + ratingCount.inspections4 +")</td></tr>",
+        "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-black.png',alt='Black'/></td><td><strong>3 or fewer</strong></td><td align='right'>(" + ratingCount.inspections3 +")</td></tr>",
+        // "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png',alt='Big'/></td><td><strong>300+ Reviews</strong></td><td align='right'>(" + reviewCount.Reviews300plus +")</td></tr>",
+        // "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png',alt='Small'/></td><td><strong>Under 300 Reviews</strong></td><td align='right'>(" + reviewCount.ReviewsUnder300 +")</td></tr>",
+        "</table>"
+      ].join("");
+      return legend;
+    },
 
-  //   onRemove: function(map) {
-  //   // Nothing to do here
-  //   }
-  // }); 
+    onRemove: function(map) {
+    // Nothing to do here
+    }
+  }); 
 
 L.control.legend = function(opts) { return new L.Control.legend(opts);}
 L.control.legend({ position: 'bottomright' }).addTo(map);
