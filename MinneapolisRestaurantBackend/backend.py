@@ -12,6 +12,8 @@ from config import api_key
 from config import google_key
 import time
 
+from config import password
+from config import username
 import psycopg2
 import sqlalchemy
 import urllib
@@ -275,8 +277,8 @@ print('---------------',flush=True)
 #Postgres username, password, and database name
 ipaddress = 'localhost'
 port = '5432'
-username = 'postgres'
-password = 'password' 
+username = username
+password = password 
 dbname = 'Minneapolis_Restaurants'
 # A long string that contains the necessary Postgres login information
 postgres_str = f'postgresql://{username}:{password}@{ipaddress}:{port}/{dbname}'
