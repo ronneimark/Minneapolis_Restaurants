@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang = "en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Google Ratings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.0-rc.3/dist/leaflet.css">
+    
+  <!-- Our CSS -->
+  <link rel="stylesheet" type="text/css" href="static/css/style.css">
+
+  <script src="https://kit.fontawesome.com/18f146fcb8.js" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  
+  <nav class="navbar sticky-top"> 
+
+      <div class="nav-title">
+          <h1>Minneapolis Restaurant Scores (v1.2) - Google Ratings</h1>
+        </div>
+  
+      <div class="navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav d-inline-block"> 
+          <li class="nav-item"><a href="yelp">Yelp Scores</a></li>
+          <li class="nav-item"><a href="google">Google Scores</a></li>
+          <li class="nav-item"><a href="health">Health Inspection Scores</a></li>
+        </ul>
+      </div>    
+  </nav>
+
+  <!-- The div that holds our map -->
+  <div id="map-id"></div>
+
+  <!-- D3 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.5.0/d3.min.js"></script>
+
+  <!-- Leaflet JavaScript -->
+  <script src="https://unpkg.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
+
+  <!-- API Key -->
+  <script type="text/javascript" src="static/js/config.js"></script>
+
+  <script type="text/javascript" src="static/js/google.js"></script>
+
+</body>
+
+</html>
