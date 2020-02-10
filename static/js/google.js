@@ -1,12 +1,12 @@
 // Adding tile layer
 var map = L.map("map-id", {
   center: [44.9602, -93.2659],
-  zoom: 13,
+  zoom: 12,
 });
 
 L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
   attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
-  zoom:13,
+  zoom:12,
   maxZoom: 22,
   minZoom:11,
   id: "mapbox.streets",
@@ -106,9 +106,9 @@ fetch('/google_data')
   
 });
   
-
-map.on('popupopen', function(centerMarker) {
-  var cM = map.project(centerMarker.popup._latlng);
-  cM.y -= centerMarker.popup._container.clientHeight/16
-  map.setView(map.unproject(cM),16, {animate: true});
+map.on('popupopen', function(e) {
+  var px = map.project(e.target._popup._latlng); // find the pixel location on the map where the popup anchor is
+  px.y -= e.target._popup._container.clientHeight/2; // find the height of the popup container, divide by 2, subtract from the Y axis of marker location
+  map.panTo(map.unproject(px),{animate: true}); // pan to new center
 });
+
