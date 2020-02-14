@@ -60,6 +60,10 @@ body,
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }
 
+#legend_table td,tr,th {
+  border: none !important;
+}
+
 #uppercase{
   text-transform:uppercase;
 }
@@ -69,8 +73,19 @@ hr{
   border-style:solid;
 }
 
-/* 
-.popup-fixed {
+#feature_infos{
+  overflow-wrap:break-word;
+}
+
+#inspections table,th,td,tr {
+  border: 1px solid black;
+  padding: 2px;
+}
+
+
+
+
+/* .popup-fixed {
   position: fixed;
   top: auto;
   bottom: 0 !important;

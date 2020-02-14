@@ -13,9 +13,11 @@ L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
   accessToken: API_KEY
 }).addTo(map);
 
-map.zoomControl.remove();
 
-var markers=new L.LayerGroup();
+
+// map.zoomControl.remove();
+
+// var markers=new L.LayerGroup();
 
 fetch('/google_data')
   .then((response) => {
@@ -24,7 +26,7 @@ fetch('/google_data')
   .then((myJson) => {
     console.log(myJson);
 
-    var markers=[];
+    var marker=[];
   
     var ratingStatusCode;
     var ratingCount = {
@@ -67,15 +69,16 @@ fetch('/google_data')
         // shadowSize: [41, 41]
       });
 
-      L.marker([myJson[i].latitude, myJson[i].longitude], {icon: thisIcon}).addTo(map)
+      marker.push(L.marker([myJson[i].latitude, myJson[i].longitude], {icon: thisIcon}).addTo(map)
         .bindPopup("<strong><center><u><div id='uppercase'><a href='https://www.google.com/maps/place/?q=place_id:" + myJson[i].googleplacesid +"'target='_blank'>" + myJson[i].name +"</a></center></u></strong><center></div><i>" + myJson[i].address + "</i></center><hr><center> Google Rating: " + myJson[i].rating +"</center><center>" + myJson[i].reviews + " Google reviews</center><hr><center><strong>Price (1-4): </strong>" +myJson[i].price +"</center>", {maxWidth:1500})
-        .addTo(map);
-        // markers.addTo(map)
+        .addTo(map)
+        );
     
     };
 
     // <a href="javascript:window.open('some.html', 'yourWindowName', 'width=200,height=150');">Test</a>
 
+    console.log(marker)
     console.log(ratingCount)
     console.log(reviewCount)
 
@@ -85,7 +88,7 @@ fetch('/google_data')
         var legend = L.DomUtil.create('div');
         legend.id = "legend";
         legend.innerHTML = [
-          "<table><tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',alt='Red'/></td><td><strong>Rating over 4.75</strong></td><td align='right'>(" + ratingCount.Rating4_75plus +")</td></tr>",
+          "<table id='legend_table'><tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',alt='Red'/></td><td><strong>Rating over 4.75</strong></td><td align='right'>(" + ratingCount.Rating4_75plus +")</td></tr>",
           "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',alt='Orange'/></td><td><strong>Rating over 4.5</strong></td><td align='right'>(" + ratingCount.Rating4_5plus +")</td></tr>",
           "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-gold.png',alt='Gold'/></td><td><strong>Rating over 4.25</strong></td><td align='right'>(" + ratingCount.Rating4_25plus +")</td></tr>",
           "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',alt='Purple'/></td><td><strong>Rating over 4</strong></td><td align='right'>(" + ratingCount.Rating4plus +")</td></tr>",
