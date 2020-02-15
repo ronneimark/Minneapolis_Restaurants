@@ -398,6 +398,6 @@ Base.metadata.create_all(engine)
 
 inspection_detail.to_sql('inspectionsdetail', engine, if_exists='replace', index=True)
 
-print(f'Table "inspectionsdetail" uploaded to postgreSQL database "Minneapolis_Restaurants".')
-print('---------------')
-print("DONE.  Don't forget to change fix the SQL data types! Use the DataTypeChange script to fix your Minneapolis_Restaurants DB")
+print(f'Table "inspectionsdetail" uploaded to postgreSQL database "Minneapolis_Restaurants".',flush=True)
+print('---------------',flush=True)
+print("DONE.  Don't forget to fix the SQL data types! Use the DataTypeChange script to fix your Minneapolis_Restaurants DB",flush=True)
