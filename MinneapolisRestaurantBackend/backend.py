@@ -226,7 +226,7 @@ for index,row in yelp_df.iterrows():
     
     url = 'https://services.arcgis.com/afSMGVsC7QlRK1kZ/arcgis/rest/services/Food_Inspections/FeatureServer/0/query?'
     params = f"where=BusinessName%20like%20'%25{biz_string}%25'%20AND%20Latitude%20%3E%3D%20{minlat}%20AND%20Latitude%20%3C%3D%20{maxlat}%20AND%20Longitude%20%3E%3D%20{minlon}%20AND%20Longitude%20%3C%3D%20{maxlon}"
-    outfields = "&outFields=BusinessName,HealthFacilityIDNumber,FullAddress,InspectionType,DateOfInspection,InspectionIDNumber,InspectionScore,Latitude,Longitude&returnGeometry=false&outSR=4326"
+    outfields = "&outFields=BusinessName,HealthFacilityIDNumber,FullAddress,InspectionType,DateOfInspection,InspectionIDNumber,InspectionScore,Latitude,Longitude,FoodCodeText,ViolationPoints,InspectionResult,FoodCodeItem,InspectorComments,ViolationStatus,ViolationPriority&returnGeometry=false&outSR=4326"
     json = '&f=json'
 
     full_url = url+params+outfields+json
