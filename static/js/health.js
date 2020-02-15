@@ -78,9 +78,9 @@ var health_scores = new L.LayerGroup();
           // shadowSize: [41, 41]
         });
 
-        var inspections_df = "<table id='inspections'><tr><th><center>Date</center></th><th><center>Type</center></th><th><center>Score</center></th></tr>"
+        var inspections_df = "<table id='inspections'><tr><th><center>ID</center></th><th><center>Date</center></th><th><center>Type</center></th><th><center>Score</center></th></tr>"
         for(var p in myJson[i].dateofinspection) {
-          inspections_df += "<tr><td>" + myJson[i].dateofinspection[p] + "</td><td>" + myJson[i].inspectiontype[p] + "</td><td align='right'>" + myJson[i].inspectionscore[p] + "</td></tr>"
+          inspections_df += "<tr><td>" + myJson[i].inspectionidnumber[p] + "</td><td>" + myJson[i].dateofinspection[p] + "</td><td>" + myJson[i].inspectiontype[p] + "</td><td align='right'>" + myJson[i].inspectionscore[p] + "</td></tr>"
           }
         inspections_df += "</table>"
         console.log(inspections_df)

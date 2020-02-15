@@ -132,15 +132,16 @@ def HealthDataRoute():
 
     # Open a session, run the query, and then close the session again
     session = Session(engine)
-    results = session.query(table.index, table.businessname, table.dateofinspection, table.fulladdress, table.inspectiontype, table.inspectionscore, table.latitude, table.longitude).all()
+    results = session.query(table.index, table.businessname, table.inspectionidnumber, table.dateofinspection, table.fulladdress, table.inspectiontype, table.inspectionscore, table.latitude, table.longitude).all()
     session.close()
 
     # Create a list of dictionaries, with each dictionary containing one row from the query.
     health_array = []
-    for table.index, table.businessname, table.dateofinspection, table.fulladdress, table.inspectiontype, table.inspectionscore, table.latitude, table.longitude in results:
+    for table.index, table.businessname, table.inspectionidnumber, table.dateofinspection, table.fulladdress, table.inspectiontype, table.inspectionscore, table.latitude, table.longitude in results:
         dict = {}
         dict['index']=table.index
         dict["businessname"] = table.businessname
+        dict["inspectionidnumber"] = table.inspectionidnumber
         dict["dateofinspection"] = table.dateofinspection
         dict["fulladdress"] = table.fulladdress
         dict["inspectiontype"] = table.inspectiontype

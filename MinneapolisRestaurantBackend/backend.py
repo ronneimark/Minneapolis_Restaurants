@@ -209,7 +209,6 @@ print('---------------',flush=True)
 
 print('Matching Yelp data list to Minneapolis Health Inspection API...   This will take some time, as we match each record...',flush=True)
 
-
 inspection_data=[]
 
 for index,row in yelp_df.iterrows():
@@ -248,27 +247,36 @@ inspection_data_list = []
 
 for records in inspection_data:
     item = records['attributes']
-    item['DateOfInspection']=time.strftime('%m/%d/%Y',time.gmtime(records['attributes']['DateOfInspection']/1000))
+    item['DateOfInspection']=time.strftime('%Y/%m/%d',time.gmtime(records['attributes']['DateOfInspection']/1000))
     inspection_data_list.append(item)
     
 print('inspection_data_list with needed data has been built.',flush=True)
 print('---------------',flush=True)
 
 
-#Inspections DataFrame created
+#Inspections DataFrames created - 1 with basic data and other with inspection details
 
-inspections_df1 = pd.DataFrame(inspection_data_list)
-inspections_df1 = inspections_df1.drop_duplicates(subset='InspectionIDNumber', keep='first')
-inspections_df = inspections_df1[['BusinessName','FullAddress',str('HealthFacilityIDNumber'),str('Latitude'),str('Longitude'),str('InspectionIDNumber'),str('DateOfInspection'),str('InspectionScore'),'InspectionType']]
-inspections_df = inspections_df.rename(columns={'BusinessName':'businessname','FullAddress':'fulladdress','HealthFacilityIDNumber':'healthfacilityidnumber','Latitude':'latitude','Longitude':'longitude','InspectionIDNumber':'inspectionidnumber','DateOfInspection':'dateofinspection','InspectionScore':'inspectionscore','InspectionType':'inspectiontype'})
+inspections_df_base = pd.DataFrame(inspection_data_list)
 
-#Creates single row in InspectionsData for each restaurant with all inspections included
+inspections_df_1 = inspections_df_base[['InspectionIDNumber','DateOfInspection','BusinessName','FullAddress','InspectionType','InspectionScore','Latitude','Longitude']]
+inspections_df_1 = inspections_df_1.drop_duplicates(subset='InspectionIDNumber', keep='first')
+inspections_df_1 = inspections_df_1.sort_values(by=['BusinessName','DateOfInspection'])
+inspections_df_1 = inspections_df_1.rename(columns={'BusinessName':'businessname','FullAddress':'fulladdress','Latitude':'latitude','Longitude':'longitude','InspectionIDNumber':'inspectionidnumber','DateOfInspection':'dateofinspection','InspectionScore':'inspectionscore','InspectionType':'inspectiontype'})
 
-inspect_by_biz=inspections_df.groupby(['businessname','fulladdress','latitude','longitude'],sort=False,as_index=False).aggregate(lambda x: list(x))
+inspections_df_2 = inspections_df_base[['DateOfInspection','InspectionIDNumber','BusinessName','FullAddress','InspectionType','InspectionScore','InspectionResult','FoodCodeItem','FoodCodeText','InspectorComments','ViolationPriority','ViolationStatus','ViolationPoints']]
+inspections_df_2 = inspections_df_2.sort_values(by=['BusinessName','DateOfInspection'])
+inspections_df_2 = inspections_df_2.rename(columns={'InspectionIDNumber':'inspectionidnumber','DateOfInspection':'dateofinspection','BusinessName':'businessname','FullAddress':'fulladdress','InspectionType':'inspectiontype','InspectionScore':'inspectionscore','InspectionResult':'inspectionresult','FoodCodeItem':'foodcodeitem','FoodCodeText':'foodcodetext','InspectorComments':'inspectorcomments','ViolationPriority':'violationpriority','ViolationStatus':'violationstatus','ViolationPoints':'violationpoints'})
 
+inspect_by_biz=inspections_df_1.groupby(['businessname','fulladdress','latitude','longitude'],sort=False,as_index=False).aggregate(lambda x: list(x))
 
-print('Inspections DataFrame now stored in memory as "inspect_by_biz".',flush=True)
-print(f'There are {len(inspections_df)} inspections for {len(inspect_by_biz)} facilities.',flush=True)
+print('Inspections DataFrame now stored in memory as "inspect_by_biz" and csv "InspectionsData.csv" has been saved in DataFiles folder.',flush=True)
+print(f'There are {len(inspections_df_1)} inspections for {len(inspect_by_biz)} facilities.',flush=True)
+print('---------------',flush=True)
+
+inspection_detail=inspections_df_2.groupby(['inspectionidnumber','dateofinspection','businessname','fulladdress','inspectiontype','inspectionscore','inspectionresult'],sort=False,as_index=False).aggregate(lambda x: list(x))
+
+print('Inspection Detail DataFrame now stored in memory as "inspection_detail"',flush=True)
+
 print('---------------',flush=True)
 
 
@@ -364,4 +372,32 @@ inspect_by_biz.to_sql('inspectionsdata', engine, if_exists='replace', index=True
 
 print(f'Table "inspectionsdata" uploaded to postgreSQL database "Minneapolis_Restaurants".',flush=True)
 print('---------------',flush=True)
+
+# Creates Classes which will serve as the anchor points for our Table, loads table to Postgres and uplads the data
+
+Base = declarative_base()
+engine = create_engine(postgres_str)
+
+class InspectionsData(Base):
+    __tablename__ = 'inspectionsdata'
+    inspectionidnumber=Column(String,primary_key=True)
+    dateofinspection=Column(String)
+    businessname=Column(String)
+    fulladdress=Column(String)
+    inspectiontype=Column(String)
+    inspectionscore=Column(String)
+    inspectionresult=Column(String)
+    foodcodeitem=Column(String)
+    foodcodetext=Column(String)
+    inspectorcomments=Column(String)
+    violationpriority=Column(String)
+    violationstatus=Column(String)
+    violationpoints=Column(String)
+                   
+Base.metadata.create_all(engine)
+
+inspection_detail.to_sql('inspectionsdetail', engine, if_exists='replace', index=True)
+
+print(f'Table "inspectionsdetail" uploaded to postgreSQL database "Minneapolis_Restaurants".')
+print('---------------')
 print("DONE.  Don't forget to change fix the SQL data types! Use the DataTypeChange script to fix your Minneapolis_Restaurants DB")

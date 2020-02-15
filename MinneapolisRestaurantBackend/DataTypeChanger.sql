@@ -14,7 +14,6 @@ ALTER TABLE yelpdata
 	ALTER COLUMN rating TYPE float,
 	ALTER COLUMN reviews TYPE int;
 	
-
 ALTER TABLE googledata
 	ADD PRIMARY KEY (googleplacesid),
 	ALTER COLUMN index TYPE int,
@@ -29,7 +28,6 @@ ALTER TABLE googledata
 	ALTER COLUMN icon TYPE varchar,
 	ALTER COLUMN photos TYPE varchar[] USING photos::character varying[];
 
-	
 ALTER TABLE inspectionsdata
 	ADD PRIMARY KEY(index,businessName),
 	ALTER COLUMN index TYPE int,
@@ -43,4 +41,18 @@ ALTER TABLE inspectionsdata
 	ALTER COLUMN inspectionscore TYPE varchar[] USING inspectionscore::character varying[],
 	ALTER COLUMN inspectiontype TYPE varchar[] USING inspectiontype::character varying[];
 
-
+ALTER TABLE inspectionsdetail
+	ADD PRIMARY KEY(inspectionidnumber),
+	ALTER COLUMN inspectionidnumber TYPE int,
+	ALTER COLUMN dateofinspection TYPE varchar,
+	ALTER COLUMN businessname TYPE varchar,
+	ALTER COLUMN fulladdress TYPE varchar,
+	ALTER COLUMN inspectiontype TYPE varchar,
+	ALTER COLUMN inspectionscore TYPE varchar,
+	ALTER COLUMN inspectionresult TYPE varchar,
+	ALTER COLUMN foodcodeitem TYPE varchar[] USING foodcodeitem::character varying[],	
+	ALTER COLUMN foodcodetext TYPE varchar[] USING foodcodetext::character varying[],
+	ALTER COLUMN inspectorcomments TYPE varchar[] USING inspectorcomments::character varying[],
+	ALTER COLUMN violationpriority TYPE varchar[] USING violationpriority::character varying[],
+	ALTER COLUMN violationstatus TYPE varchar[] USING violationstatus::character varying[],
+	ALTER COLUMN violationpoints TYPE varchar[] USING violationpoints::character varying[];
