@@ -82,6 +82,18 @@ hr{
   padding: 2px;
 }
 
+table>.inspection_detail_table { 
+  table-layout:fixed;
+  width:180px;
+}
+
+.forty {
+  column-width: 40%;
+}
+
+.twenty {
+  column-width: 20%;
+}
 
 
 

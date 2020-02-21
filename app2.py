@@ -5,7 +5,6 @@ from flask import jsonify
 from flask import request
 from config import password, username
 from flask_sqlalchemy import SQLAlchemy
-import json
 
 # Import the functions we need from SQL Alchemy
 import sqlalchemy
@@ -153,9 +152,9 @@ def HealthDataRoute():
     # Return the jsonified result.
     return jsonify(health_array)
 
-@app.route("/inspection_detail/<inspection_number>", methods=['GET', 'POST'])
-def InspectionDetailRoute(inspection_number):
-
+@app.route("/health_detail")
+def HealthDetailRoute():
+    
     #need this in order to refresh the page
     engine = create_engine(connection_string)
     base = automap_base()
@@ -169,7 +168,7 @@ def InspectionDetailRoute(inspection_number):
     session.close()
 
     # Create a list of dictionaries, with each dictionary containing one row from the query.
-    inspection_detail_array = []
+    health_detail_array = []
 
     for table.index, table.inspectionidnumber, table.dateofinspection, table.businessname, table.fulladdress, table.inspectiontype, table.inspectionscore, table.inspectionresult, table.foodcodeitem, table.foodcodetext, table.inspectorcomments, table.violationpriority, table.violationstatus, table.violationpoints in results:
         dict = {}
@@ -187,18 +186,61 @@ def InspectionDetailRoute(inspection_number):
         dict["violationpriority"] = table.violationpriority
         dict["violationstatus"] = table.violationstatus
         dict["violationpoints"] = table.violationpoints
-        inspection_detail_array.append(dict)
+        health_detail_array.append(dict)
 
-    inspection_detail = []
+    # inspection_detail = []
+    # for item in health_detail_array:
+    #     search_term = item['inspectionidnumber']
 
-    for item in inspection_detail_array:
-        search_term = str(item['inspectionidnumber'])
+    #     if search_term == inspection_number:
+    #         inspection_detail.append(item)
 
-        if search_term == inspection_number:
-            inspection_detail.append(item)
+    # Return the jsonified result.
+    return jsonify(health_detail_array)
 
-    return render_template('inspection.html', inspectionscore=inspection_detail[0]['inspectionscore'], businessname=inspection_detail[0]['businessname'], fulladdress=inspection_detail[0]['fulladdress'], dateofinspection=inspection_detail[0]['dateofinspection'], inspectiontype=inspection_detail[0]['inspectiontype'], inspectionidnumber=inspection_detail[0]['inspectionidnumber'], inspection_detail = inspection_detail)
-    # return jsonify(inspection_detail)
+@app.route("/health_detail/<inspection_number>")
+def HealthDetailRoute2(inspection_number):
+    
+    #need this in order to refresh the page
+    engine = create_engine(connection_string)
+    base = automap_base()
+    base.prepare(engine, reflect=True)
+
+    table = base.classes.inspectionsdetail
+
+    # Open a session, run the query, and then close the session again
+    session = Session(engine)
+    results = session.query(table.inspectionidnumber, table.dateofinspection, table.businessname, table.fulladdress, table.inspectiontype, table.inspectionscore, table.inspectionresult, table.foodcodeitem, table.foodcodetext, table.inspectorcomments, table.violationpriority, table.violationstatus, table.violationpoints).all()
+    session.close()
+
+    # Create a list of dictionaries, with each dictionary containing one row from the query.
+    health_detail_array = []
+    for table.inspectionidnumber, table.dateofinspection, table.businessname, table.fulladdress, table.inspectiontype, table.inspectionscore, table.inspectionresult, table.foodcodeitem, table.foodcodetext, table.inspectorcomments, table.violationpriority, table.violationstatus, table.violationpoints in results:
+        dict = {}
+        dict['inspectionidnumber']=table.inspectionidnumber
+        dict["businessname"] = table.businessname
+        dict["inspectionresult"] = table.inspectionresult
+        dict["dateofinspection"] = table.dateofinspection
+        dict["fulladdress"] = table.fulladdress
+        dict["inspectiontype"] = table.inspectiontype
+        dict["inspectionscore"] = table.inspectionscore
+        dict["foodcodeitem"] = table.foodcodeitem
+        dict["foodcodetext"] = table.foodcodetext
+        dict["inspectorcomments"] = table.inspectorcomments
+        dict["violationpriority"] = table.violationpriority
+        dict["violationstatus"] = table.violationstatus
+        dict["violationpoints"] = table.violationpoints
+        health_detail_array.append(dict)
+
+    # inspection_detail = []
+    # for item in health_detail_array:
+    #     search_term = item['inspectionidnumber']
+
+    #     if search_term == inspection_number:
+    #         inspection_detail.append(item)
+
+    # Return the jsonified result.
+    return jsonify(health_detail_array)
 
 @app.route("/test")
 def TestRoute():

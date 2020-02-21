@@ -273,7 +273,7 @@ print('Inspections DataFrame now stored in memory as "inspect_by_biz" and csv "I
 print(f'There are {len(inspections_df_1)} inspections for {len(inspect_by_biz)} facilities.',flush=True)
 print('---------------',flush=True)
 
-inspection_detail=inspections_df_2.groupby(['inspectionidnumber','dateofinspection','businessname','fulladdress','inspectiontype','inspectionscore','inspectionresult'],sort=False,as_index=False).aggregate(lambda x: list(x))
+inspection_detail=inspections_df_2
 
 print('Inspection Detail DataFrame now stored in memory as "inspection_detail"',flush=True)
 

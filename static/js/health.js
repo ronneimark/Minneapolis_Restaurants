@@ -23,7 +23,6 @@ var light = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?ac
 }).addTo(map);
 
 var baseMaps = {
-  Light: light,
   Streets:streets,
 }
 // map.zoomControl.remove();
@@ -76,20 +75,20 @@ var health_scores = new L.LayerGroup();
           iconAnchor: [12, 41],
           popupAnchor: [1, -34],
           // shadowSize: [41, 41]
-        });
+        }); 
 
         var inspections_df = "<table id='inspections'><tr><th><center>ID</center></th><th><center>Date</center></th><th><center>Type</center></th><th><center>Score</center></th></tr>"
         for(var p in myJson[i].dateofinspection) {
-          inspections_df += "<tr><td>" + myJson[i].inspectionidnumber[p] + "</td><td>" + myJson[i].dateofinspection[p] + "</td><td>" + myJson[i].inspectiontype[p] + "</td><td align='right'>" + myJson[i].inspectionscore[p] + "</td></tr>"
+          // inspections_df += "<tr><td><a href='http://127.0.0.1:5000/inspection_detail/" + myJson[i].inspectionidnumber[p] + "' target='_blank'>" + myJson[i].inspectionidnumber[p] + "</a></td><td>" + myJson[i].dateofinspection[p] + "</td><td>" + myJson[i].inspectiontype[p] + "</td><td align='right'>" + myJson[i].inspectionscore[p] + "</td></tr>"
+          inspections_df += "<tr><td align=right><a href='http://127.0.0.1:5000/inspection_detail/" + myJson[i].inspectionidnumber[p] + "' onClick=\"return popup(this, 'inspection')\">" + myJson[i].inspectionidnumber[p] + "</a></td><td>" + myJson[i].dateofinspection[p] + "</td><td>" + myJson[i].inspectiontype[p] + "</td><td align='right'>" + myJson[i].inspectionscore[p] + "</td></tr>"
           }
         inspections_df += "</table>"
-        console.log(inspections_df)
 
         marker.push(
           L.marker([myJson[i].latitude, myJson[i].longitude], {
             icon: thisIcon
           })
-          .bindPopup("<div id='feature_infos'><div id='uppercase'><strong><center><u>" + myJson[i].businessname +"</u></center></strong></div><center><i>" + myJson[i].fulladdress + "</i></center><br><center><strong>Inspections since 2017: " + myJson[i].inspectionscore.length + "</strong></center><center>" + inspections_df + "</center></div>",{maxWidth:500})
+          .bindPopup("<div id='feature_infos'><div id='uppercase'><strong><center><u>" + myJson[i].businessname +"</u></center></strong></div><center><i>" + myJson[i].fulladdress + "</i></center><br><center><h6><strong>Inspections since 2017: " + myJson[i].inspectionscore.length + "</strong></h6></center><center>" + inspections_df + "</center></div>",{maxWidth:500})
           // <strong>Scores: </strong>" + myJson[i].inspectionscore +"</center><center><strong>Dates: </strong>" + myJson[i].dateofinspection + "</center><center><strong>Inspection Types: </strong>" + myJson[i].inspectiontype
           .addTo(health_scores))
           health_scores.addTo(map)
@@ -146,21 +145,22 @@ var overlays = {
       "Health Scores":health_scores
 }
 
+
+map.on('overlayadd', function (eventLayer) {
+  // Switch to the Permafrost legend...
+     if (eventLayer.name === 'Health Scores') {
+        //  this.removeControl(legend1);
+         legend.addTo(this);}
+    else { // Or switch to the treeline legend...
+         this.removeControl(legend);
+        //  legend1.addTo(this);
+    }});
+
+
 L.control.layers(baseMaps, overlays, {collapsed:false}).addTo(map);
 
-// var overlays = {
-//   "Health Scores":health_scores
-// }
 
-// map.on('overlayadd', function (eventLayer) {
-//   // Switch to the Permafrost legend...
-//      if (eventLayer.name === 'Health Scores') {
-//         //  this.removeControl(legend1);
-//          legend.addTo(this);}
-//     else { // Or switch to the treeline legend...
-//          this.removeControl(legend);
-//         //  legend1.addTo(this);
-//     }});
+
 // L.control.layers(baseMaps, overlays, {collapsed:false}).addTo(map);
 
 map.on('popupopen', function(e) {
