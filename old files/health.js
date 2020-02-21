@@ -13,14 +13,6 @@ var streets = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?
   accessToken: API_KEY
 }).addTo(map);
 
-var light = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
-  attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
-  zoom:12,
-  maxZoom: 22,
-  minZoom:11,
-  id: "mapbox.light",
-  accessToken: API_KEY
-}).addTo(map);
 
 var baseMaps = {
   Streets:streets,
@@ -28,7 +20,8 @@ var baseMaps = {
 // map.zoomControl.remove();
 
 var health_scores = new L.LayerGroup();
-  fetch('/health_data')
+
+fetch('/health_data')
     .then((response) => {
       return response.json();
     })
@@ -102,22 +95,48 @@ var health_scores = new L.LayerGroup();
       
       L.Control.legend = L.Control.extend({
         onAdd: function(map) {
-          
-          var legend = L.DomUtil.create('div');
-          legend.id = "legend";
-          legend.innerHTML = [
-            "<h5><strong><u><center>Inspections since 2017</center></u></strong></h5>",
-            "<table id='legend_table'><tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',alt='Red'/></td><td><strong>10+ Inspections</strong></td><td align='right'>(" + reviewCount.Reviews10plus +")</td></tr>",
-            "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',alt='Red'/></td><td><strong>7+ Inspections</strong></td><td align='right'>(" + ratingCount.inspections7 +")</td></tr>",
-            "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',alt='Orange'/></td><td><strong>6 Inspections</strong></td><td align='right'>(" + ratingCount.inspections6 +")</td></tr>",
-            "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-gold.png',alt='Gold'/></td><td><strong>5 Inspections</strong></td><td align='right'>(" + ratingCount.inspections5 +")</td></tr>",
-            "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',alt='Purple'/></td><td><strong>4 Inspections</strong></td><td align='right'>(" + ratingCount.inspections4 +")</td></tr>",
-            "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-black.png',alt='Black'/></td><td><strong>3 or fewer</strong></td><td align='right'>(" + ratingCount.inspections3 +")</td></tr>",
-            // "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png',alt='Big'/></td><td><strong>300+ Reviews</strong></td><td align='right'>(" + reviewCount.Reviews300plus +")</td></tr>",
-            // "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png',alt='Small'/></td><td><strong>Under 300 Reviews</strong></td><td align='right'>(" + reviewCount.ReviewsUnder300 +")</td></tr>",
-            "</table>"
-          ].join("");
-          return legend;
+			var legendName = 'health_legend';
+			var legend = L.DomUtil.create('div');
+			legend.id = legendName;
+			legend.innerHTML = [
+				"<h5><strong><u><center>Inspections since 2017</center></u></strong></h5>",
+				"<table id='legend_table'><tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',alt='Red'/></td><td><strong>10+ Inspections</strong></td><td align='right'>(" + reviewCount.Reviews10plus +")</td></tr>",
+				"<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',alt='Red'/></td><td><strong>7+ Inspections</strong></td><td align='right'>(" + ratingCount.inspections7 +")</td></tr>",
+				"<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',alt='Orange'/></td><td><strong>6 Inspections</strong></td><td align='right'>(" + ratingCount.inspections6 +")</td></tr>",
+				"<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-gold.png',alt='Gold'/></td><td><strong>5 Inspections</strong></td><td align='right'>(" + ratingCount.inspections5 +")</td></tr>",
+				"<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',alt='Purple'/></td><td><strong>4 Inspections</strong></td><td align='right'>(" + ratingCount.inspections4 +")</td></tr>",
+				"<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-black.png',alt='Black'/></td><td><strong>3 or fewer</strong></td><td align='right'>(" + ratingCount.inspections3 +")</td></tr>",
+				// "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png',alt='Big'/></td><td><strong>300+ Reviews</strong></td><td align='right'>(" + reviewCount.Reviews300plus +")</td></tr>",
+				// "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png',alt='Small'/></td><td><strong>Under 300 Reviews</strong></td><td align='right'>(" + reviewCount.ReviewsUnder300 +")</td></tr>",
+				"</table>"
+			].join("");
+		  
+
+
+		  map.on('overlayadd', function (eventLayer) {
+			var legendary = document.getElementById(legendName);
+			// Switch to the Permafrost legend...
+				if (eventLayer.name === 'Health Scores') {
+					//this.removeControl(legend1);
+					legendary.style.display = "inline";
+				}
+				else { // Or switch to the treeline legend...
+					legendary.style.display = "none";
+					//this.removeControl(legend);
+					//  legend1.addTo(this);
+				}
+			});
+			
+			map.on('overlayremove', (eventLayer) => {
+				var legendary = document.getElementById(legendName);
+				if (eventLayer.name === 'Health Scores') {
+					//this.removeControl(legend1);
+					legendary.style.display = "none";
+				}
+			});
+		
+
+        	return legend;
         },
 
         onRemove: function(map) {
@@ -127,34 +146,12 @@ var health_scores = new L.LayerGroup();
 
     L.control.legend = function(opts) { return new L.Control.legend(opts);}
     L.control.legend({ position: 'bottomright' }).addTo(map);
-
-    // map.on('overlayadd', function (eventLayer) {
-    //   // Switch to the Permafrost legend...
-    //   console.log(eventLayer.name)
-    //      if (eventLayer.name === 'Health Scores') {
-    //         //  this.removeControl(legend1);
-    //          health_legend.addTo(map);}
-    //     else { // Or switch to the treeline legend...
-    //          map.removeControl(healthlegend);
-    //         //  legend1.addTo(this);
-    //     }});
    
 }); 
 
 var overlays = {
       "Health Scores":health_scores
 }
-
-
-map.on('overlayadd', function (eventLayer) {
-  // Switch to the Permafrost legend...
-     if (eventLayer.name === 'Health Scores') {
-        //  this.removeControl(legend1);
-         legend.addTo(this);}
-    else { // Or switch to the treeline legend...
-         this.removeControl(legend);
-        //  legend1.addTo(this);
-    }});
 
 
 L.control.layers(baseMaps, overlays, {collapsed:false}).addTo(map);
@@ -164,7 +161,8 @@ L.control.layers(baseMaps, overlays, {collapsed:false}).addTo(map);
 // L.control.layers(baseMaps, overlays, {collapsed:false}).addTo(map);
 
 map.on('popupopen', function(e) {
-  var px = map.project(e.target._popup._latlng); // find the pixel location on the map where the popup anchor is
-  px.y -= e.target._popup._container.clientHeight/2; // find the height of the popup container, divide by 2, subtract from the Y axis of marker location
-  map.panTo(map.unproject(px),{animate: true}); // pan to new center
+	console.log('hi\tworld');
+	var px = map.project(e.target._popup._latlng); // find the pixel location on the map where the popup anchor is
+	px.y -= e.target._popup._container.clientHeight/2; // find the height of the popup container, divide by 2, subtract from the Y axis of marker location
+	map.panTo(map.unproject(px),{animate: true}); // pan to new center
 });

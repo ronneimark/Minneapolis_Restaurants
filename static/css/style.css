@@ -46,7 +46,9 @@ body,
   margin-right: 10px;
 } */
 
-#legend{
+#health_legend,
+#yelp_legend,
+#google_legend {
   padding: 10px;
   font-family: Sanchez, serif;
   font-size: 16px;

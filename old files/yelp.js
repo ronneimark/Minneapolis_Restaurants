@@ -4,7 +4,7 @@ var map = L.map("map-id", {
   zoom: 12,
 });
 
-L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+var streets = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
   attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
   zoom:12,
   maxZoom: 22,
@@ -16,6 +16,12 @@ L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
 // map.zoomControl.remove();
 
 // var markers=new L.LayerGroup();
+var baseMaps = {
+  Streets:streets,
+}
+// map.zoomControl.remove();
+
+var yelp_scores = new L.LayerGroup();
 
 fetch('/yelp_data')
   .then((response) => {
@@ -69,9 +75,9 @@ fetch('/yelp_data')
 
       marker.push(L.marker([myJson[i].latitude, myJson[i].longitude], {icon: thisIcon}).addTo(map)
         .bindPopup("<div id='uppercase'><strong><u><center><a href='" + myJson[i].url +"'target='_blank'>" + myJson[i].name +"</a></center></u></strong><center></div><i>" + myJson[i].address + "</i></center><center>" + myJson[i].phone + "<hr><center>Yelp Rating: " + myJson[i].rating +"</center><center>" + myJson[i].reviews + " Yelp reviews</center><hr><center><strong>Categories: </strong>" + myJson[i].categories + "</center><center><strong>Transactions: </strong>" + myJson[i].transactions + "</strong></center><center>", {maxWidth:1500})
-        .addTo(map)
-        );
-    
+        .addTo(yelp_scores))
+        yelp_scores.addTo(map)
+        
     };
 
     // <a href="javascript:window.open('some.html', 'yourWindowName', 'width=200,height=150');">Test</a>
@@ -82,9 +88,9 @@ fetch('/yelp_data')
 
     L.Control.legend = L.Control.extend({
       onAdd: function(map) {
-        
+        var legendName='yelp_legend'
         var legend = L.DomUtil.create('div');
-        legend.id = "legend";
+        legend.id = legendName;
         legend.innerHTML = [
           "<table id='legend_table'><tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',alt='Red'/></td><td><strong>Rating of 5</strong></td><td align='right'>(" + ratingCount.Rating5 +")</td></tr>",
           "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',alt='Orange'/></td><td><strong>Rating of 4.5</strong></td><td align='right'>(" + ratingCount.Rating4_5 +")</td></tr>",
@@ -94,6 +100,29 @@ fetch('/yelp_data')
           "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png',alt='Big'/></td><td><strong>300+ Reviews</strong></td><td align='right'>(" + reviewCount.Reviews300plus +")</td></tr>",
           "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png',alt='Small'/></td><td><strong>Under 300 Reviews</strong></td><td align='right'>(" + reviewCount.ReviewsUnder300 +")</td></tr></table>"
         ].join("");
+
+    map.on('overlayadd', function (eventLayer) {
+      var legendary = document.getElementById(legendName);
+      // Switch to the Permafrost legend...
+        if (eventLayer.name === 'Yelp Scores') {
+          //this.removeControl(legend1);
+          legendary.style.display = "inline";
+        }
+        else { // Or switch to the treeline legend...
+          legendary.style.display = "none";
+          //this.removeControl(legend);
+          //  legend1.addTo(this);
+        }
+      });
+      
+      map.on('overlayremove', (eventLayer) => {
+        var legendary = document.getElementById(legendName);
+        if (eventLayer.name === 'Yelp Scores') {
+          //this.removeControl(legend1);
+          legendary.style.display = "none";
+        }
+      });
+
         return legend;
       },
 
@@ -106,6 +135,15 @@ fetch('/yelp_data')
   L.control.legend({ position: 'bottomright' }).addTo(map);
 
 });
+
+
+var overlays = {
+  "Yelp Scores":yelp_scores
+}
+
+
+L.control.layers(baseMaps, overlays, {collapsed:false}).addTo(map);
+
 
 // marker.on('mouseover', function(e) {
 //   //open popup;

@@ -22,7 +22,7 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 # Effectively disables page caching
 
 
 # Here's where we define the various application routes ...
-@app.route("/")
+@app.route("/",  methods=['GET', 'POST'])
 def IndexRoute():
     ''' This function runs when the browser loads the index route. 
         Note that the html file must be located in a folder called templates. '''
@@ -66,13 +66,6 @@ def YelpDataRoute():
     # Return the jsonified result. 
     return jsonify(yelp_reviews)
     
-  
-@app.route("/yelp", methods=['GET', 'POST'])
-def YelpRoute():
-     
-    webpage = render_template("yelp.html")
-    return webpage
-
 @app.route("/google_data", methods=['GET', 'POST'])
 def GoogleDataRoute():
     
@@ -107,18 +100,6 @@ def GoogleDataRoute():
 
     # Return the jsonified result. 
     return jsonify(google_reviews)
-
-@app.route("/google", methods=['GET', 'POST'])
-def GoogleRoute():
-     
-    webpage = render_template("google.html")
-    return webpage
-
-@app.route("/health", methods=['GET', 'POST'])
-def HealthRoute():
-
-    webpage = render_template("health.html")
-    return webpage
 
 @app.route("/health_data")
 def HealthDataRoute():

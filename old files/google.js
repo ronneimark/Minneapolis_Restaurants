@@ -4,7 +4,7 @@ var map = L.map("map-id", {
   zoom: 12,
 });
 
-L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+var streets=L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
   attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
   zoom:12,
   maxZoom: 22,
@@ -13,11 +13,15 @@ L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
   accessToken: API_KEY
 }).addTo(map);
 
-
+var baseMaps = {
+  Streets:streets,
+}
 
 // map.zoomControl.remove();
 
 // var markers=new L.LayerGroup();
+
+var google_scores = new L.LayerGroup();
 
 fetch('/google_data')
   .then((response) => {
@@ -71,8 +75,8 @@ fetch('/google_data')
 
       marker.push(L.marker([myJson[i].latitude, myJson[i].longitude], {icon: thisIcon}).addTo(map)
         .bindPopup("<strong><center><u><div id='uppercase'><a href='https://www.google.com/maps/place/?q=place_id:" + myJson[i].googleplacesid +"'target='_blank'>" + myJson[i].name +"</a></center></u></strong><center></div><i>" + myJson[i].address + "</i></center><hr><center> Google Rating: " + myJson[i].rating +"</center><center>" + myJson[i].reviews + " Google reviews</center><hr><center><strong>Price (1-4): </strong>" +myJson[i].price +"</center>", {maxWidth:1500})
-        .addTo(map)
-        );
+        .addTo(google_scores))
+        google_scores.addTo(map)
     
     };
 
@@ -84,9 +88,9 @@ fetch('/google_data')
 
     L.Control.legend = L.Control.extend({
       onAdd: function(map) {
-        
+        var legendName='google_legend'
         var legend = L.DomUtil.create('div');
-        legend.id = "legend";
+        legend.id = legendName;
         legend.innerHTML = [
           "<table id='legend_table'><tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',alt='Red'/></td><td><strong>Rating over 4.75</strong></td><td align='right'>(" + ratingCount.Rating4_75plus +")</td></tr>",
           "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',alt='Orange'/></td><td><strong>Rating over 4.5</strong></td><td align='right'>(" + ratingCount.Rating4_5plus +")</td></tr>",
@@ -96,6 +100,30 @@ fetch('/google_data')
           "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png',alt='Big'/></td><td><strong>1000+ Reviews</strong></td><td align='right'>(" + reviewCount.Reviews1000plus +")</td></tr>",
           "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png',alt='Small'/></td><td><strong>Under 1000 Reviews</strong></td><td align='right'>(" + reviewCount.ReviewsUnder1000 +")</td></tr></table>"
         ].join("");
+
+    map.on('overlayadd', function (eventLayer) {
+      var legendary = document.getElementById(legendName);
+      // Switch to the Permafrost legend...
+        if (eventLayer.name === 'Google Scores') {
+          //this.removeControl(legend1);
+          legendary.style.display = "inline";
+        }
+        else { // Or switch to the treeline legend...
+          legendary.style.display = "none";
+          //this.removeControl(legend);
+          //  legend1.addTo(this);
+        }
+      });
+      
+    map.on('overlayremove', (eventLayer) => {
+      var legendary = document.getElementById(legendName);
+      if (eventLayer.name === 'Google Scores') {
+        //this.removeControl(legend1);
+        legendary.style.display = "none";
+      }
+      });
+
+
         return legend;
       },
 
@@ -109,6 +137,16 @@ fetch('/google_data')
   
 });
   
+var overlays = {
+  "Google Scores":google_scores,
+
+}
+
+
+L.control.layers(baseMaps, overlays, {collapsed:false}).addTo(map);
+
+
+
 map.on('popupopen', function(e) {
   var px = map.project(e.target._popup._latlng); // find the pixel location on the map where the popup anchor is
   px.y -= e.target._popup._container.clientHeight/2; // find the height of the popup container, divide by 2, subtract from the Y axis of marker location
