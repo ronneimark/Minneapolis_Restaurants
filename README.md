@@ -11,9 +11,11 @@ To set up the backend, from the folder "Minneapolis Restaurant Backend":
         username = {your postgreSQL username}
         password = {your postgreSQL password}
 
-  2) Run python script backend.py in the terminal.
+  2) Create DB called Minneapolis_Restaurants in PostreSQL.
 
-  3) Run DataTypeChanger script in PGAdmin, within the Minneapolis_Restaurants DB to fix the data types.
+  3) Run python script backend.py in the terminal.
+
+  4) Run DataTypeChanger script in PGAdmin, within the Minneapolis_Restaurants DB to fix the data types.
 
 In the main folder, you will need a config.py with:
 
