@@ -383,9 +383,9 @@ fetch('/google_data')
 });
 
 var overlays = {
-      "Inspection Scores":health_scores,
       "Yelp Scores":yelp_scores,
-      "Google Scores":google_scores
+      "Google Scores":google_scores,
+      "Inspection Scores":health_scores
 }
 
 
