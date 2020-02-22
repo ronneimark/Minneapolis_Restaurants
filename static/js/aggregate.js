@@ -374,25 +374,7 @@ setTimeout(() => {
 	setBox("Google Scores", false);
 	document.getElementById("google_legend").style.display = 'none';
 }, 1000);
-// map.on('overlayadd', function (eventLayer) {
 
-//   // Switch to the Permafrost legend...
-//     if (eventLayer.name === 'Inspection Scores') {
-//       //this.removeControl(legend1);
-//       lcontrol.removeLayer('Yelp Scores')
-//       lcontrol.removeLayer('Google Scores')
-//     }
-//     else if (eventLayer.name === 'Yelp Scores') {
-//       //this.removeControl(legend1);
-//       lcontrol.removeLayer('Inspection Scores')
-//       lcontrol.removeLayer('Google Scores')
-//     }
-//     else if (eventLayer.name === 'Google Scores') {
-//       //this.removeControl(legend1);
-//       lcontrol.removeLayer('Inspection Scores')
-//       lcontrol.removeLayer('Yelp Scores')
-//     }
-//   });
 
 
 map.on('popupopen', function (e) {
