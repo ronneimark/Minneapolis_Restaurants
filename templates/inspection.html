@@ -62,9 +62,9 @@
     <tbody>
     {% for item in inspection_detail %}
         <tr>
-        <td class="forty" align=justify valign=top style="text-transform:lowercase"><strong>{{ item.inspectorcomments }}</strong></td>
-        <td class="twenty" align=center valign=top><b>{{item.violationpriority}}</b><br>{{ item.violationstatus }}<br><i>{{ item.violationpoints }} points</i></td>
-        <td classs="forty" valign=top align=left><b>{{ item.foodcodeitem }}: </b>{{ item.foodcodetext }}</td>
+        <td align=justify valign=top style="text-transform:lowercase; max-width:250px; word-wrap:break-word;" width=250><strong>{{ item.inspectorcomments }}</strong></td>
+        <td align=center valign=top width=100 style="max-width:100px; word-wrap:break-word;"><b>{{item.violationpriority}}</b><br>{{ item.violationstatus }}<br><i>{{ item.violationpoints }} points</i></td>
+        <td valign=top align=left width=250 style="max-width:250px; word-wrap:break-word;"><b>{{ item.foodcodeitem }}: </b>{{ item.foodcodetext }}</td>
         </tr>
     {% endfor %}
     

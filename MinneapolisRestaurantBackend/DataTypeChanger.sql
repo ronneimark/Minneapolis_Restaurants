@@ -41,7 +41,7 @@ ALTER TABLE inspectionsdata
 	ALTER COLUMN inspectiontype TYPE varchar[] USING inspectiontype::character varying[];
 
 ALTER TABLE inspectionsdetail
-	ADD PRIMARY KEY(inspectionidnumber,index),
+	ADD PRIMARY KEY(inspectionidnumber),
 	ALTER COLUMN inspectionidnumber TYPE int,
 	ALTER COLUMN dateofinspection TYPE varchar,
 	ALTER COLUMN businessname TYPE varchar,
