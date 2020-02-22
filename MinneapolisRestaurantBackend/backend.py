@@ -378,7 +378,7 @@ print('---------------',flush=True)
 Base = declarative_base()
 engine = create_engine(postgres_str)
 
-class InspectionsData(Base):
+class InspectionsDetail(Base):
     __tablename__ = 'inspectionsdata'
     inspectionidnumber=Column(String,primary_key=True)
     dateofinspection=Column(String)
