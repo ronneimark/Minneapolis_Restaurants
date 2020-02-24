@@ -62,6 +62,11 @@ body,
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }
 
+#yelp_legend,
+#google_legend {
+  width:300px;
+}
+
 #legend_table td,tr,th {
   border: none !important;
 }
