@@ -355,9 +355,46 @@ fetch('/health_data')
 
 var mpls_neighborhoods=new L.LayerGroup();
 d3.json('static/Minneapolis_Neighborhoods.geojson', function(neighborhoods){
-	L.geoJson(neighborhoods).addTo(mpls_neighborhoods)
+	L.geoJson(neighborhoods, {
+		onEachFeature: function(feature, layer) {
+			layer.bindPopup(feature.properties.BDNAME);
+		  }
+	}).addTo(mpls_neighborhoods)
+
 	mpls_neighborhoods.addTo(map);
-});
+
+  }
+
+);
+
+// d3.json('static/Minneapolis_Neighborhoods.geojson', function(data) {
+
+// 	// Create a new choropleth layer
+// 	geojson = L.choropleth(data, {
+  
+// 	  // Define what  property in the features to use
+// 	  valueProperty: "MHI2016",
+  
+// 	  // Set color scale
+// 	  scale: ["#ffffb2", "#b10026"],
+  
+// 	  // Number of breaks in step range
+// 	  steps: 10,
+  
+// 	  // q for quartile, e for equidistant, k for k-means
+// 	  mode: "q",
+// 	  style: {
+// 		// Border color
+// 		color: "#fff",
+// 		weight: 1,
+// 		fillOpacity: 0.8
+// 	  },
+  
+// 	  // Binding a pop-up to each layer
+// 	  onEachFeature: function(feature, layer) {
+// 		layer.bindPopup("Zip Code: " + feature.properties.ZIP + "<br>Median Household Income:<br>" +
+// 		  "$" + feature.properties.MHI2016);
+// 	  }
 
 
 // fetch('/minneapolis_neighborhoods')

@@ -7,7 +7,7 @@ body,
 }
 
 .navbar {
-  background-color:lightblue;
+  background-color:red;
   color: darkblue;
   text-align:center;
   padding-top:30px;
@@ -46,6 +46,7 @@ body,
   margin-right: 10px;
 } */
 
+
 #health_legend,
 #yelp_legend,
 #google_legend {
@@ -57,7 +58,7 @@ body,
   color: black;
   border-style:solid;
   border-width: 2px;
-  background-color:lightblue;
+  background-color:wheat;
   border-radius: 5px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }

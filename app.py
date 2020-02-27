@@ -135,24 +135,24 @@ def HealthDataRoute():
     # Return the jsonified result.
     return jsonify(health_array)
 
-@app.route("/minneapolis_neighborhoods")
-def NeighborhoodRoute():
+# @app.route("/minneapolis_neighborhoods")
+# def NeighborhoodRoute():
 
-    data=pd.read_json('Minneapolis_Neighborhoods.geojson')
+#     data=pd.read_json('Minneapolis_Neighborhoods.geojson')
 
-    data=data.features
+#     data=data.features
 
-    i = 0
-    neighborhoods=[]
+#     i = 0
+#     neighborhoods=[]
 
-    for items in data:
-        dict={}
-        dict['neighborhood']=data[i]['properties']['BDNAME']
-        dict['geometry'] = data[i]['geometry']['coordinates']
-        neighborhoods.append(dict)
-        i+=1
+#     for items in data:
+#         dict={}
+#         dict['neighborhood']=data[i]['properties']['BDNAME']
+#         dict['geometry'] = data[i]['geometry']['coordinates']
+#         neighborhoods.append(dict)
+#         i+=1
 
-    return jsonify(neighborhoods)
+#     return jsonify(neighborhoods)
 
 @app.route("/inspection_detail/<inspection_number>", methods=['GET', 'POST'])
 def InspectionDetailRoute(inspection_number):
