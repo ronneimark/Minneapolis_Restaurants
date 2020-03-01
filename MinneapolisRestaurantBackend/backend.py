@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# In[ ]:
+
+
 # Import Dependencies
 
 import requests
@@ -29,24 +32,93 @@ print(f'Dependencies imported...',flush=True)
 print('---------------',flush=True)
 
 
+# # Inspections Data Download
+
+# In[ ]:
+
+
+url = 'https://services.arcgis.com/afSMGVsC7QlRK1kZ/arcgis/rest/services/Food_Inspections/FeatureServer/0/query?'
+params = "where=FacilityCategory%20%3D%20%27RESTAURANT%27"
+outfields = "&outFields=BusinessName,HealthFacilityIDNumber,FullAddress,InspectionType,DateOfInspection,InspectionIDNumber,InspectionScore,Latitude,Longitude,FoodCodeText,ViolationPoints,InspectionResult,FoodCodeItem,InspectorComments,ViolationStatus,ViolationPriority&returnGeometry=false&outSR=4326"
+json = '&f=json'
+
+full_url = url+params+outfields+json
+
+response = requests.get(full_url)
+
+data=response.json()['features']
+
+
+# In[ ]:
+
+
+inspection_data_list = []
+
+for records in data:
+    item = records['attributes']
+    item['DateOfInspection']=time.strftime('%Y/%m/%d',time.gmtime(records['attributes']['DateOfInspection']/1000))
+    inspection_data_list.append(item)
+    
+print('inspection_data_list with needed data has been built.',flush=True)
+print('---------------',flush=True)
+
+
+# In[ ]:
+
+
+inspections_df_base = pd.DataFrame(inspection_data_list)
+
+inspections_df_1 = inspections_df_base[['InspectionIDNumber','DateOfInspection','BusinessName','FullAddress','InspectionType','InspectionScore','Latitude','Longitude']]
+inspections_df_1 = inspections_df_1.drop_duplicates(subset='InspectionIDNumber', keep='first')
+inspections_df_1 = inspections_df_1.sort_values(by=['BusinessName','DateOfInspection'])
+inspections_df_1 = inspections_df_1.rename(columns={'BusinessName':'businessname','FullAddress':'fulladdress','Latitude':'latitude','Longitude':'longitude','InspectionIDNumber':'inspectionidnumber','DateOfInspection':'dateofinspection','InspectionScore':'inspectionscore','InspectionType':'inspectiontype'})
+
+inspections_df_2 = inspections_df_base[['DateOfInspection','InspectionIDNumber','BusinessName','FullAddress','InspectionType','InspectionScore','InspectionResult','FoodCodeItem','FoodCodeText','InspectorComments','ViolationPriority','ViolationStatus','ViolationPoints']]
+inspections_df_2 = inspections_df_2.sort_values(by=['BusinessName','DateOfInspection'])
+inspections_df_2 = inspections_df_2.rename(columns={'InspectionIDNumber':'inspectionidnumber','DateOfInspection':'dateofinspection','BusinessName':'businessname','FullAddress':'fulladdress','InspectionType':'inspectiontype','InspectionScore':'inspectionscore','InspectionResult':'inspectionresult','FoodCodeItem':'foodcodeitem','FoodCodeText':'foodcodetext','InspectorComments':'inspectorcomments','ViolationPriority':'violationpriority','ViolationStatus':'violationstatus','ViolationPoints':'violationpoints'})
+inspections_detail=inspections_df_2
+
+inspections_detail
+print('Inspection Detail DataFrame now stored in memory as "inspection_detail"',flush=True)
+print('---------------',flush=True)
+
+
+# In[ ]:
+
+
+inspect_by_biz=inspections_df_1.groupby(['businessname','fulladdress','latitude','longitude'],sort=False,as_index=False).aggregate(lambda x: list(x))
+inspections_data = inspect_by_biz
+
+print('Inspections DataFrame now stored in memory as "inspections_data"')
+print(f'There are {len(inspections_df_1)} inspections for {len(inspections_data)} facilities.')
+print('---------------')
+
+
+# # Yelp Data
+
+# In[ ]:
+
+
 # Download 1000 restaurants from Yelp API with Minneapolis as the search parameter.
 
 data = []
+i=0
+iterable_list = inspections_data.values.tolist()
 
 headers = {'Authorization': 'Bearer %s' % api_key}
 
 url='https://api.yelp.com/v3/businesses/search'
 
-print('Downloading Yelp Data...',flush=True)
+print('Downloading Yelp Data for each restaurant...',flush=True)
 
-for offset in range(0, 1000, 50):
+for item in iterable_list:
     
     params = {
-        'limit':50, 
-        'location':'Minneapolis, MN',
-
-        'categories':'restaurants',
-        'offset':offset
+        'term':item[0],
+        'location':item[1] + 'Minneapolis, MN',
+        'latitude':item[2],
+        'longitude':item[3],
+        'radius':200
         }  
     
     response=requests.get(url, params=params, headers=headers)
@@ -56,11 +128,16 @@ for offset in range(0, 1000, 50):
         print('400 Bad Request')
         break
         
+    print("Restaurants Remaining: {:3}".format(len(inspections_data)-i), end="\r",flush=True)
+    
+    i+=1
+        
 print(f'Yelp data downloaded...  There are {len(data)} records...',flush=True)
 print('---------------',flush=True)
 
 
-#Convert Yelp Data to list to convert to DataFrame
+# In[ ]:
+
 
 i=0
 yelp_list=[]
@@ -90,197 +167,98 @@ print('yelp_list with needed data has been built.',flush=True)
 print('---------------',flush=True)
 
 
-#Convert Yelp list to DataFrame
+# In[ ]:
+
 
 yelp_df=pd.DataFrame(yelp_list)
 yelp_df=yelp_df[['yelpid','name','image','url','latitude','longitude','address','phone','categories','transactions','rating','reviews']]
 yelp_df = yelp_df.drop_duplicates(subset=['name','address'])
 
 print('Yelp DataFrame now stored in memory as "yelp_df"',flush=True)
-print(f'Removed duplicates and restaurants outside of Minneapolis. Leaving {len(yelp_df)} restaurants.',flush=True)
+print(f'Removed duplicates. Leaving {len(yelp_df)} restaurants.',flush=True)
 print('---------------',flush=True)
 
 
-#Query the Google API for every restaurant in the Yelp DataFrame
+# In[ ]:
 
-print('Matching Yelp data list to Google API...   This will take some time, as we match each record...',flush=True)
+
+master_list=yelp_df.to_dict('records')
+
+
+# In[ ]:
+
+
+print('Matching Yelp data list to Google API in order to append Google columns to Master...   This will take some time, as we match each record...',flush=True)
 
 url = 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?'
-google_data=[]
 
-for index,row in yelp_df.iterrows():
+i=0
+
+for item in master_list:
     
     params = {
         'key':google_key,
-        'input':row['name'],
+        'input':item['name'],
         'inputtype':'textquery',
-        'locationbias': 'point:' + str(row['latitude']) + ", " + str(row['longitude']),
-        'radius': 10,
-        'fields':'place_id,name,formatted_address,geometry,rating,user_ratings_total,price_level,photos,icon'
+        'locationbias': 'point:' + str(item['latitude']) + ", " + str(item['longitude']),
+        'radius': 100,
+        'fields':'place_id,name,rating,user_ratings_total,price_level'
         }
     
     response = requests.get(url, params=params)
-
+    json=response.json()
+    
     if len(response.json()['candidates'])>0:
-        google_data.append(response.json()['candidates'][0])
-    else:
-        google_data.append("")
-        
-    print("Restaurants Remaining: {:3}".format(len(yelp_df)-index), end="\r",flush=True)
-
-print(f'Google match has been completed...  There are {len(google_data)} records',flush=True)
-
-
-#Convert Google Data to List to form DataFrame
-
-i=0
-google_list=[]
-
-for places in google_data:
-    if places != "":
-        if "place_id" in places:
-            google_id = places['place_id']
-        if "icon"in places:
-            icon=places['icon']
-        photos=[]
-        if "photos" in places:
-            for photo in places['photos']:
-                item = photo['html_attributions']
-                photos.append(item)
-        if "price_level" in places:
-            price_level=places['price_level']
-        if "name" in places:
-            name = places['name']
-        if "formatted_address" in places:
-            address = places['formatted_address']
-        if "rating" in places:
-            rating  = places['rating']
-        if "user_ratings_total" in places:
-            reviews = places['user_ratings_total']
-        if "geometry" in places:
-            latitude = places['geometry']['location']['lat']
-            longitude = places['geometry']['location']['lng']
-        business_dict = {"googleplacesid":google_id,"icon":icon,"photos":photos,"name":name,"latitude":latitude,"longitude":longitude,"address":address,"rating":rating,"reviews":reviews,"price":price_level}
+        if 'name' in json['candidates'][0]: 
+            item.update(google_name =json['candidates'][0]['name'])
+        if 'place_id' in json['candidates'][0]:
+            item.update(google_id=json['candidates'][0]['place_id'])
+        if 'rating' in json['candidates'][0]:
+            item.update(google_rating=json['candidates'][0]['rating'])
+        if 'user_ratings_total' in json['candidates'][0]:
+            item.update(google_reviews = json['candidates'][0]['user_ratings_total'])
+        if 'price_level' in json['candidates'][0]:
+            item.update(google_price =json['candidates'][0]['price_level'])
     
-    else:
-        business_dict = {"googleplacesid":"","icon":"","photos":"","name":"","latitude":"","longitude":"","address":"", "rating":"","reviews":"","price":""}
-    
-    google_list.append(business_dict)
+    print("Restaurants Remaining: {:3}".format(len(master_list)-i), end="\r",flush=True)
     
     i+=1
-    
-print('google_list with needed data has been built.',flush=True)
+
+print(f'Google match has been completed...',flush=True)
 
 
-# Create Googlelist DataFrame
-
-google_df=pd.DataFrame(google_list)
-google_df=google_df[google_df.name != ""]
-google_df = google_df.drop_duplicates(subset=['googleplacesid'])
-
-google_df=google_df[['googleplacesid','name','latitude','longitude','address','rating','reviews','price','icon','photos']]
+# In[ ]:
 
 
-print('Google DataFrame now stored in memory as "google_df".',flush=True)
-print(f'Removed null entries.  {len(google_df)} restaurants remain.',flush=True)
-print('---------------',flush=True)
+master_df=pd.DataFrame(master_list)
 
 
-# Create comparison spreadsheet to spot check that Google and Yelp DataFrames match up.
-
-i = 0
-compare_list=[]
-yelpgeo_list=[]
-
-for i in range(len(google_list)):
-
-    compare = {"Yelp":yelp_list[i]['name'],"Google":google_list[i]['name'],"GoogleAddress":google_list[i]['address'],"Yelp Address":yelp_list[i]['address']}
-    compare_list.append(compare)
-    i+=1
-
-compare_df = pd.DataFrame(compare_list)
-compare_df.to_csv('DataFiles/compare.csv')
-
-print('"compare_df" has been stored in memory and csv "compare.csv" has been saved in DataFiles folder to allow easy comparison between Yelp and Google data.',flush=True)
-print('---------------',flush=True)
+# In[ ]:
 
 
-# Queries the Mineapolis Inspection Database for all restaurants in the Yelp DataFrame.
-
-print('Matching Yelp data list to Minneapolis Health Inspection API...   This will take some time, as we match each record...',flush=True)
-
-inspection_data=[]
-
-for index,row in yelp_df.iterrows():
-
-    biz = row['name']
-
-    biz_string = biz.split(' ',1)[0].upper()
-    biz_string = biz_string.replace("'","")
-    biz_string = biz_string.replace("&","")
-
-    minlat=row['latitude']-.0015
-    maxlat=row['latitude']+.0015
-    minlon=row['longitude']-.0015
-    maxlon=row['longitude']+.0015
-    
-    url = 'https://services.arcgis.com/afSMGVsC7QlRK1kZ/arcgis/rest/services/Food_Inspections/FeatureServer/0/query?'
-    params = f"where=BusinessName%20like%20'%25{biz_string}%25'%20AND%20Latitude%20%3E%3D%20{minlat}%20AND%20Latitude%20%3C%3D%20{maxlat}%20AND%20Longitude%20%3E%3D%20{minlon}%20AND%20Longitude%20%3C%3D%20{maxlon}"
-    outfields = "&outFields=BusinessName,HealthFacilityIDNumber,FullAddress,InspectionType,DateOfInspection,InspectionIDNumber,InspectionScore,Latitude,Longitude,FoodCodeText,ViolationPoints,InspectionResult,FoodCodeItem,InspectorComments,ViolationStatus,ViolationPriority&returnGeometry=false&outSR=4326"
-    json = '&f=json'
-
-    full_url = url+params+outfields+json
-
-    response = requests.get(full_url)
-    
-    if response !="":
-        inspection_data += response.json()['features']
-        
-    print("Restaurants Remaining: {:3}".format(len(yelp_df)-index), end="\r",flush=True)
-    
-print(f'Inspection data match has been completed...  There are {len(inspection_data)} records',flush=True)
-print('---------------',flush=True)
-
-#Converts Inspection Data into a list for the DataFrame
-
-inspection_data_list = []
-
-for records in inspection_data:
-    item = records['attributes']
-    item['DateOfInspection']=time.strftime('%Y/%m/%d',time.gmtime(records['attributes']['DateOfInspection']/1000))
-    inspection_data_list.append(item)
-    
-print('inspection_data_list with needed data has been built.',flush=True)
-print('---------------',flush=True)
+# Create a new Aggregate Score and Review Count  based on Yelp Rating and Google Rating and add Column to the DataFrame
 
 
-#Inspections DataFrames created - 1 with basic data and other with inspection details
+# Function that computes the weighted rating of each movie
+def aggregate_rating (x):
+    yelp_reviews = x['reviews']
+    yelp_rating = x['rating']
+    google_reviews = x['google_reviews']
+    google_rating = x['google_rating']
+    # Calculation
+    return ((yelp_rating*yelp_reviews)+(google_rating*google_reviews))/(yelp_reviews+google_reviews)
 
-inspections_df_base = pd.DataFrame(inspection_data_list)
+def total_reviews (x):
+    yelp_reviews = x['reviews']
+    google_reviews = x['google_reviews']
+    return yelp_reviews+google_reviews
 
-inspections_df_1 = inspections_df_base[['InspectionIDNumber','DateOfInspection','BusinessName','FullAddress','InspectionType','InspectionScore','Latitude','Longitude']]
-inspections_df_1 = inspections_df_1.drop_duplicates(subset='InspectionIDNumber', keep='first')
-inspections_df_1 = inspections_df_1.sort_values(by=['BusinessName','DateOfInspection'])
-inspections_df_1 = inspections_df_1.rename(columns={'BusinessName':'businessname','FullAddress':'fulladdress','Latitude':'latitude','Longitude':'longitude','InspectionIDNumber':'inspectionidnumber','DateOfInspection':'dateofinspection','InspectionScore':'inspectionscore','InspectionType':'inspectiontype'})
-
-inspections_df_2 = inspections_df_base[['DateOfInspection','InspectionIDNumber','BusinessName','FullAddress','InspectionType','InspectionScore','InspectionResult','FoodCodeItem','FoodCodeText','InspectorComments','ViolationPriority','ViolationStatus','ViolationPoints']]
-inspections_df_2 = inspections_df_2.sort_values(by=['BusinessName','DateOfInspection'])
-inspections_df_2 = inspections_df_2.rename(columns={'InspectionIDNumber':'inspectionidnumber','DateOfInspection':'dateofinspection','BusinessName':'businessname','FullAddress':'fulladdress','InspectionType':'inspectiontype','InspectionScore':'inspectionscore','InspectionResult':'inspectionresult','FoodCodeItem':'foodcodeitem','FoodCodeText':'foodcodetext','InspectorComments':'inspectorcomments','ViolationPriority':'violationpriority','ViolationStatus':'violationstatus','ViolationPoints':'violationpoints'})
-
-inspect_by_biz=inspections_df_1.groupby(['businessname','fulladdress','latitude','longitude'],sort=False,as_index=False).aggregate(lambda x: list(x))
-
-print('Inspections DataFrame now stored in memory as "inspect_by_biz" and csv "InspectionsData.csv" has been saved in DataFiles folder.',flush=True)
-print(f'There are {len(inspections_df_1)} inspections for {len(inspect_by_biz)} facilities.',flush=True)
-print('---------------',flush=True)
-
-inspection_detail=inspections_df_2
-
-print('Inspection Detail DataFrame now stored in memory as "inspection_detail"',flush=True)
-
-print('---------------',flush=True)
+master_df['agg_rating'] = master_df.apply(aggregate_rating, axis=1)
+master_df['total_reviews'] = master_df.apply(total_reviews, axis=1)
 
 
-#DEPLOYMENT TO POSTGRESQL
+# In[ ]:
+
 
 #Postgres username, password, and database name
 ipaddress = 'localhost'
@@ -292,13 +270,16 @@ dbname = 'Minneapolis_Restaurants'
 postgres_str = f'postgresql://{username}:{password}@{ipaddress}:{port}/{dbname}'
 
 
-# Creates Classes which will serve as the anchor points for YelpData, loads table to Postgres and uplads the data
+# In[ ]:
+
+
+# Creates Classes which will serve as the anchor points for our Table, loads table to Postgres and uplads the data
 
 Base = declarative_base()
 engine = create_engine(postgres_str)
 
-class YelpData(Base):
-    __tablename__ = 'yelpdata'
+class MasterData(Base):
+    __tablename__ = 'masterdata'
     index=Column(Integer,primary_key=True,autoincrement=True)
     yelpid=Column(String,nullable=False)
     name=Column(String)
@@ -312,43 +293,26 @@ class YelpData(Base):
     transactions=Column(String)
     rating=Column(Float(10))
     reviews=Column(Integer)
+    google_name=Column(String)
+    google_id=Column(String)
+    google_rating=Column(Float(10))
+    google_reviews=Column(Integer)
+    google_price=Column(Integer)
+    agg_rating=Column(Float)
+    total_reviews=Column(Float)
                    
 Base.metadata.create_all(engine)
 
-yelp_df.to_sql('yelpdata', engine, if_exists='replace', index=True)
+master_df.to_sql('masterdata', engine, if_exists='replace', index=True)
 
-print(f'Table "yelpdata" uploaded to postgreSQL database "Minneapolis_Restaurants".',flush=True)
-print('---------------',flush=True)
-
-
-
-# Creates Classes which will serve as the anchor points for GoogleData, loads table to Postgres and uplads the data
-
-Base = declarative_base()
-engine = create_engine(postgres_str)
-
-class GoogleData(Base):
-    __tablename__ = 'googledata'
-    googleplacesid=Column(String,primary_key=True, nullable=False)
-    name=Column(String)
-    latitude=Column(Float(20))
-    longitude=Column(Float(20))
-    address=Column(String)
-    rating=Column(Float(10))
-    reviews=Column(Integer) 
-    price=Column(Integer)
-    icon=Column(String)
-    photos=Column(String)
-                   
-Base.metadata.create_all(engine)
-
-google_df.to_sql('googledata', engine, if_exists='replace', index=True)
-
-print(f'Table "googledata" uploaded to postgreSQL database "Minneapolis_Restaurants".',flush=True)
-print('---------------',flush=True)
+print(f'Table "masterdata" uploaded to postgreSQL database "Minneapolis_Restaurants".',flush=True)
+print('---------------')
 
 
-# Creates Classes which will serve as the anchor points for InspectionsData, loads table to Postgres and uplads the data
+# In[ ]:
+
+
+# Creates Classes which will serve as the anchor points for our Table, loads table to Postgres and uplads the data
 
 Base = declarative_base()
 engine = create_engine(postgres_str)
@@ -358,7 +322,7 @@ class InspectionsData(Base):
     index=Column(Integer,primary_key=True,autoincrement=True)
     businessname=Column(String,nullable=False)
     fulladdress=Column(String)
-    healthfacilityidumber=Column(String)
+    healthfacilityidnumber=Column(String)
     latitude=Column(Float(20))
     longitude=Column(Float(20))
     inspectionidnumber=Column(String)
@@ -368,10 +332,14 @@ class InspectionsData(Base):
                    
 Base.metadata.create_all(engine)
 
-inspect_by_biz.to_sql('inspectionsdata', engine, if_exists='replace', index=True)
+inspections_data.to_sql('inspectionsdata', engine, if_exists='replace', index=True)
 
 print(f'Table "inspectionsdata" uploaded to postgreSQL database "Minneapolis_Restaurants".',flush=True)
 print('---------------',flush=True)
+
+
+# In[ ]:
+
 
 # Creates Classes which will serve as the anchor points for our Table, loads table to Postgres and uplads the data
 
@@ -379,7 +347,7 @@ Base = declarative_base()
 engine = create_engine(postgres_str)
 
 class InspectionsDetail(Base):
-    __tablename__ = 'inspectionsdata'
+    __tablename__ = 'inspectionsdetail'
     inspectionidnumber=Column(String,primary_key=True)
     dateofinspection=Column(String)
     businessname=Column(String)
@@ -396,8 +364,9 @@ class InspectionsDetail(Base):
                    
 Base.metadata.create_all(engine)
 
-inspection_detail.to_sql('inspectionsdetail', engine, if_exists='replace', index=True)
+inspections_detail.to_sql('inspectionsdetail', engine, if_exists='replace', index=True)
 
 print(f'Table "inspectionsdetail" uploaded to postgreSQL database "Minneapolis_Restaurants".',flush=True)
 print('---------------',flush=True)
 print("DONE.  Don't forget to fix the SQL data types! Use the DataTypeChange script to fix your Minneapolis_Restaurants DB",flush=True)
+

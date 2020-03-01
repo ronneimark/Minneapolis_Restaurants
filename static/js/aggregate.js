@@ -1,12 +1,12 @@
 // Adding tile layer
 var map = L.map("map-id", {
 	center: [44.9602, -93.2659],
-	zoom: 12,
+	zoom: 13,
 });
 
 var streets = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
 	attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
-	zoom: 12,
+	zoom: 13,
 	maxZoom: 22,
 	minZoom: 11,
 	id: "mapbox.streets",
@@ -16,11 +16,9 @@ var streets = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?
 var baseMaps = {
 	Streets: streets,
 }
-// map.zoomControl.remove();
 
-
-var yelp_scores = new L.LayerGroup();
-fetch('/yelp_data')
+var master_scores = new L.LayerGroup();
+fetch('/master_data')
 	.then((response) => {
 		return response.json();
 	})
@@ -31,34 +29,34 @@ fetch('/yelp_data')
 
 		var ratingStatusCode;
 		var ratingCount = {
-			Rating5: 0,
+			Rating4_75: 0,
 			Rating4_5: 0,
+			Rating4_25: 0,
 			Rating4: 0,
-			Rating3_5: 0,
-			Rating3under: 0
+			Rating4under: 0
 		};
 
 		var reviewsStatusCode;
 		var reviewCount = {
-			Reviews300plus: 0,
-			ReviewsUnder300: 0
+			Reviews1270plus: 0,
+			ReviewsUnder1270: 0
 		};
 
 		for (i = 0; i < myJson.length; i++) {
 
 			// var magnitude = Object.assign({}, data.features[i].properties.mag);
-			var rating = myJson[i].rating;
-			var reviews = myJson[i].reviews;
+			var rating = myJson[i].agg_rating;
+			var reviews = myJson[i].total_reviews;
 
-			if (rating >= 5) { ratingStatusCode = "Rating5"; color = "red"; }
+			if (rating >= 4.75) { ratingStatusCode = "Rating4_75"; color = "red"; }
 			else if (rating >= 4.5) { ratingStatusCode = "Rating4_5"; color = "orange"; }
-			else if (rating >= 4) { ratingStatusCode = "Rating4"; color = "gold"; }
-			else if (rating >= 3.5) { ratingStatusCode = "Rating3_5"; color = "violet"; }
-			else { ratingStatusCode = "Rating3under"; color = "black" }
+			else if (rating >= 4.25) { ratingStatusCode = "Rating4_25"; color = "gold"; }
+			else if (rating >= 4) { ratingStatusCode = "Rating4"; color = "violet"; }
+			else { ratingStatusCode = "Rating4under"; color = "black" }
 			ratingCount[ratingStatusCode]++;
 
-			if (reviews >= 300) { reviewsStatusCode = "Reviews300plus"; icon = 'static/images/marker-icon-2x-' + color + '.png'; }
-			else { reviewsStatusCode = "ReviewsUnder300"; icon = 'static/images/marker-icon-' + color + '.png'; };
+			if (reviews >= 1270) { reviewsStatusCode = "Reviews1270plus"; icon = 'static/images/marker-icon-2x-' + color + '.png'; }
+			else { reviewsStatusCode = "ReviewsUnder1270"; icon = 'static/images/marker-icon-' + color + '.png'; };
 			reviewCount[reviewsStatusCode]++;
 
 			var thisIcon = new L.Icon({
@@ -71,152 +69,46 @@ fetch('/yelp_data')
 			});
 
 			marker.push(L.marker([myJson[i].latitude, myJson[i].longitude], { icon: thisIcon }).addTo(map)
-				.bindPopup("<div id='uppercase'><strong><u><center><a href='" + myJson[i].url + "' onClick=\"return popup(this, 'Yelp')\">" + myJson[i].name + "</a></u></strong></div></center><center><i>" + myJson[i].address + "</i></center><center>" + myJson[i].phone + "<hr><center>Yelp Rating: " + myJson[i].rating + "</center><center>" + myJson[i].reviews + " Yelp reviews</center><hr><center><strong>Categories: </strong>" + myJson[i].categories + "</center><center><strong>Transactions: </strong>" + myJson[i].transactions + "</strong></center><center>", { maxWidth: 1500 })
-				.addTo(yelp_scores));
-			yelp_scores.addTo(map);
+				.bindPopup("<div id='uppercase'><strong><u><center>" + myJson[i].name + "</center></u></strong></div><center><strong><i>" + myJson[i].address + "</i></strong></center><center><strong>" + myJson[i].phone + "</strong><hr><center><strong>Yelp Categories: </strong>" + myJson[i].categories + "</center><center><strong>Price (Google 1-4): </strong>" + myJson[i].google_price + "</center><hr><strong>Overall Score: " + myJson[i].agg_rating + "</strong><br><strong>Total Reviews: " + myJson[i].total_reviews + "</strong></center><br><table><tr><td valign=top width=185 style=\"max-width:185px; min-width:185px; word-wrap:break-word;\"><h5><center><a href='" + myJson[i].url + "' onClick=\"return popup(this, 'Yelp')\">YELP</a></center></h5><center>Rating: " + myJson[i].rating + "</center><center>" + myJson[i].reviews + " Reviews</center><center><strong>Transactions: </strong>" + myJson[i].transactions + "</strong></center></td><td valign=top width=185 style=\"max-width:185px; min-width:185px; word-wrap:break-word;\"><h5><center><a href='https://www.google.com/maps/place/?q=place_id:" + myJson[i].google_id + "' onClick=\"return popup(this, 'Google')\">GOOGLE</a></center></h5><center>Rating: " + myJson[i].google_rating + "</center><center>" + myJson[i].google_reviews + " Reviews</center></td></tr></table>", { maxWidth: 380 })
+				.addTo(master_scores));
+			master_scores.addTo(map);
 
 		};
 
 		L.Control.legend = L.Control.extend({
 			onAdd: function (map) {
-				var legendName = 'yelp_legend'
+				var legendName = 'master_legend'
 				var legend = L.DomUtil.create('div');
 				legend.id = legendName;
 				legend.innerHTML = [
-					"<h5><strong><u><center>Yelp Scores</center></u></strong></h5>",
-					"<table id='legend_table'><tr><td width=70><img src='static/images/marker-icon-red.png',alt='Red'/></td><td width=180><strong>Rating of 5</strong></td><td width=50 align='right'>(" + ratingCount.Rating5 + ")</td></tr>",
-					"<tr><td><img src='static/images/marker-icon-orange.png',alt='Orange'/></td><td><strong>Rating of 4.5</strong></td><td align='right'>(" + ratingCount.Rating4_5 + ")</td></tr>",
-					"<tr><td><img src='static/images/marker-icon-gold.png',alt='Gold'/></td><td><strong>Rating of 4</strong></td><td align='right'>(" + ratingCount.Rating4 + ")</td></tr>",
-					"<tr><td><img src='static/images/marker-icon-violet.png',alt='Purple'/></td><td><strong>Rating of 3.5</strong></td><td align='right'>(" + ratingCount.Rating3_5 + ")</td></tr>",
-					"<tr><td><img src='static/images/marker-icon-black.png',alt='Black'/></td><td><strong>Rating 3 or less</strong></td><td align='right'>(" + ratingCount.Rating3under + ")</td></tr>",
-					"<tr><td><img src='static/images/marker-icon-2x-grey.png',alt='Big'/></td><td><strong>300+ Reviews</strong></td><td align='right'>(" + reviewCount.Reviews300plus + ")</td></tr>",
-					"<tr><td><img src='static/images/marker-icon-grey.png',alt='Small'/></td><td><strong>Under 300 Reviews</strong></td><td align='right'>(" + reviewCount.ReviewsUnder300 + ")</td></tr></table>"
+					"<h5><strong><u><center>Yelp/Google Scores</center></u></strong></h5>",
+					"<table id='legend_table'><tr><td width=70><img src='static/images/marker-icon-red.png',alt='Red'/></td><td width=180><strong>Rating over 4.75</strong></td><td width=50 align='right'>(" + ratingCount.Rating4_75 + ")</td></tr>",
+					"<tr><td><img src='static/images/marker-icon-orange.png',alt='Orange'/></td><td><strong>Rating over 4.5</strong></td><td align='right'>(" + ratingCount.Rating4_5 + ")</td></tr>",
+					"<tr><td><img src='static/images/marker-icon-gold.png',alt='Gold'/></td><td><strong>Rating over 4.25</strong></td><td align='right'>(" + ratingCount.Rating4_25 + ")</td></tr>",
+					"<tr><td><img src='static/images/marker-icon-violet.png',alt='Purple'/></td><td><strong>Rating over 4</strong></td><td align='right'>(" + ratingCount.Rating4 + ")</td></tr>",
+					"<tr><td><img src='static/images/marker-icon-black.png',alt='Black'/></td><td><strong>Rating under 4</strong></td><td align='right'>(" + ratingCount.Rating4under + ")</td></tr>",
+					"<tr><td><img src='static/images/marker-icon-2x-grey.png',alt='Big'/></td><td><strong>1270+ Reviews</strong></td><td align='right'>(" + reviewCount.Reviews1270plus + ")</td></tr>",
+					"<tr><td><img src='static/images/marker-icon-grey.png',alt='Small'/></td><td><strong>Under 1270 Reviews</strong></td><td align='right'>(" + reviewCount.ReviewsUnder1270 + ")</td></tr></table>"
 				].join("");
 
 
 				map.on('overlayadd', function (eventLayer) {
 					// Switch to the Permafrost legend...
-					if (eventLayer.name === 'Yelp Scores') {
+					if (eventLayer.name === 'Master Scores') {
 						var legendary = document.getElementById(legendName);
 						legendary.style.display = "inline";
 						setBox('Google Scores', false);
-					}
-				});
-
-				map.on('overlayremove', (eventLayer) => {
-					if (eventLayer.name === 'Yelp Scores') {
-						var legendary = document.getElementById(legendName);
-						//this.removeControl(legend1);
-						legendary.style.display = "none";
-					}
-				});
-
-				return legend;
-			},
-
-			onRemove: function (map) {
-				// Nothing to do here
-			}
-		});
-
-		L.control.legend = function (opts) { return new L.Control.legend(opts); }
-		L.control.legend({ position: 'bottomleft' }).addTo(map);
-
-});
-
-
-var google_scores = new L.LayerGroup();
-fetch('/google_data')
-	.then((response) => {
-		return response.json();
-	})
-	.then((myJson) => {
-		console.log(myJson);
-
-		var marker = [];
-
-		var ratingStatusCode;
-		var ratingCount = {
-			Rating4_75plus: 0,
-			Rating4_5plus: 0,
-			Rating4_25plus: 0,
-			Rating4plus: 0,
-			Ratingunder4: 0
-		};
-
-		var reviewsStatusCode;
-		var reviewCount = {
-			Reviews1000plus: 0,
-			ReviewsUnder1000: 0
-		};
-
-		for (i = 0; i < myJson.length; i++) {
-
-			// var magnitude = Object.assign({}, data.features[i].properties.mag);
-			var rating = myJson[i].rating;
-			var reviews = myJson[i].reviews;
-
-			if (rating >= 4.75) { ratingStatusCode = "Rating4_75plus"; color = "red"; }
-			else if (rating >= 4.5) { ratingStatusCode = "Rating4_5plus"; color = "orange"; }
-			else if (rating >= 4.25) { ratingStatusCode = "Rating4_25plus"; color = "gold"; }
-			else if (rating >= 4) { ratingStatusCode = "Rating4plus"; color = "violet"; }
-			else { ratingStatusCode = "Ratingunder4"; color = "black" }
-			ratingCount[ratingStatusCode]++;
-
-			if (reviews >= 1000) { reviewsStatusCode = "Reviews1000plus"; icon = 'static/images/marker-icon-2x-' + color + '.png'; }
-			else { reviewsStatusCode = "ReviewsUnder1000"; icon = 'static/images/marker-icon-' + color + '.png'; };
-			reviewCount[reviewsStatusCode]++;
-
-			var thisIcon = new L.Icon({
-				iconUrl: icon,
-				shadowUrl: 'static/images/marker-shadow.png',
-				// iconSize: [25, 41],
-				iconAnchor: [12, 41],
-				popupAnchor: [1, -34],
-				// shadowSize: [41, 41]
-			});
-
-			marker.push(L.marker([myJson[i].latitude, myJson[i].longitude], { icon: thisIcon }).addTo(map)
-				.bindPopup("<strong><center><u><div id='uppercase'><a href='https://www.google.com/maps/place/?q=place_id:" + myJson[i].googleplacesid + "' onClick=\"return popup(this, 'Google')\">" + myJson[i].name + "</a></center></u></strong><center></div><i>" + myJson[i].address + "</i></center><hr><center> Google Rating: " + myJson[i].rating + "</center><center>" + myJson[i].reviews + " Google reviews</center><hr><center><strong>Price (1-4): </strong>" + myJson[i].price + "</center>", { maxWidth: 1500 })
-				.addTo(google_scores))
-			google_scores.addTo(map)
-
-		};
-
-		L.Control.legend = L.Control.extend({
-			onAdd: function (map) {
-				var legendName = 'google_legend'
-				var legend = L.DomUtil.create('div');
-				legend.id = legendName;
-				legend.innerHTML = [
-					"<h5><strong><u><center>Google Scores</center></u></strong></h5>",
-					"<table id='legend_table'><tr><td width=70><img src='static/images/marker-icon-red.png',alt='Red'/></td><td width=180><strong>Rating over 4.75</strong></td><td width=50 align='right'>(" + ratingCount.Rating4_75plus + ")</td></tr>",
-					"<tr><td><img src='static/images/marker-icon-orange.png',alt='Orange'/></td><td><strong>Rating over 4.5</strong></td><td align='right'>(" + ratingCount.Rating4_5plus + ")</td></tr>",
-					"<tr><td><img src='static/images/marker-icon-gold.png',alt='Gold'/></td><td><strong>Rating over 4.25</strong></td><td align='right'>(" + ratingCount.Rating4_25plus + ")</td></tr>",
-					"<tr><td><img src='static/images/marker-icon-violet.png',alt='Purple'/></td><td><strong>Rating over 4</strong></td><td align='right'>(" + ratingCount.Rating4plus + ")</td></tr>",
-					"<tr><td><img src='static/images/marker-icon-black.png',alt='Black'/></td><td><strong>Rating under 4</strong></td><td align='right'>(" + ratingCount.Ratingunder4 + ")</td></tr>",
-					"<tr><td><img src='static/images/marker-icon-2x-grey.png',alt='Big'/></td><td><strong>1000+ Reviews</strong></td><td align='right'>(" + reviewCount.Reviews1000plus + ")</td></tr>",
-					"<tr><td><img src='static/images/marker-icon-grey.png',alt='Small'/></td><td><strong>Under 1000 Reviews</strong></td><td align='right'>(" + reviewCount.ReviewsUnder1000 + ")</td></tr></table>"
-				].join("");
-
-				map.on('overlayadd', function (eventLayer) {
-					// Switch to the Permafrost legend...
-					if (eventLayer.name === 'Google Scores') {
-						var legendary = document.getElementById(legendName);
-						//this.removeControl(legend1);
-						legendary.style.display = "inline";
 						setBox('Yelp Scores', false);
 					}
 				});
 
 				map.on('overlayremove', (eventLayer) => {
-					if (eventLayer.name === 'Google Scores') {
+					if (eventLayer.name === 'Master Scores') {
 						var legendary = document.getElementById(legendName);
 						//this.removeControl(legend1);
 						legendary.style.display = "none";
 					}
 				});
-
 
 				return legend;
 			},
@@ -297,11 +189,6 @@ fetch('/health_data')
 
 		};
 
-		console.log(health_scores)
-		console.log(ratingCount)
-		console.log(reviewCount)
-
-
 		L.Control.legend = L.Control.extend({
 			onAdd: function (map) {
 				var legendName = 'health_legend';
@@ -310,18 +197,11 @@ fetch('/health_data')
 				legend.innerHTML = [
 					"<h5><strong><u><center>Inspections since 2017</center></u></strong></h5>",
 					"<table id='legend_table'><tr><td width=40><img src='static/images/marker_green10.png',alt='Red'/></td><td width=130><strong>10+ Inspections</strong></td><td width=40 align='right'>(" + ratingCount.inspections10 + ")</td></tr>",
-					// "<tr><td><img src='static/images/icons8-inspection-80-red.png',alt='Red'/></td><td><strong>7+ Inspections</strong></td><td align='right'>(" + ratingCount.inspections7 + ")</td></tr>",
-					// "<tr><td><img src='static/images/icons8-inspection-80-orange.png',alt='Orange'/></td><td><strong>6 Inspections</strong></td><td align='right'>(" + ratingCount.inspections6 + ")</td></tr>",
-					// "<tr><td><img src='static/images/icons8-inspection-80-pink.png',alt='Gold'/></td><td><strong>5 Inspections</strong></td><td align='right'>(" + ratingCount.inspections5 + ")</td></tr>",
-					// "<tr><td><img src='static/images/icons8-inspection-80-blue.png',alt='Purple'/></td><td><strong>4 Inspections</strong></td><td align='right'>(" + ratingCount.inspections4 + ")</td></tr>",
-					// "<tr><td><img src='static/icons8-inspection-80-purple.png',alt='Black'/></td><td><strong>3 or fewer</strong></td><td align='right'>(" + ratingCount.inspections3 + ")</td></tr>",
 					"<tr><td><img src='static/images/marker_green7.png',alt='Red'/></td><td><strong>7-9 Inspections</strong></td><td align='right'>(" + ratingCount.inspections7 + ")</td></tr>",
 					"<tr><td><img src='static/images/marker_green6.png',alt='Orange'/></td><td><strong>6 Inspections</strong></td><td align='right'>(" + ratingCount.inspections6 + ")</td></tr>",
 					"<tr><td><img src='static/images/marker_green5.png',alt='Gold'/></td><td><strong>5 Inspections</strong></td><td align='right'>(" + ratingCount.inspections5 + ")</td></tr>",
 					"<tr><td><img src='static/images/marker_green4.png',alt='Purple'/></td><td><strong>4 Inspections</strong></td><td align='right'>(" + ratingCount.inspections4 + ")</td></tr>",
 					"<tr><td><img src='static/images/marker_green3.png',alt='Black'/></td><td><strong>1-3 Inspections</strong></td><td align='right'>(" + ratingCount.inspections3 + ")</td></tr>",
-					// "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png',alt='Big'/></td><td><strong>300+ Reviews</strong></td><td align='right'>(" + reviewCount.Reviews300plus +")</td></tr>",
-					// "<tr><td><img src='https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png',alt='Small'/></td><td><strong>Under 300 Reviews</strong></td><td align='right'>(" + reviewCount.ReviewsUnder300 +")</td></tr>",
 					"</table>"
 				].join("");
 
@@ -363,62 +243,10 @@ d3.json('static/Minneapolis_Neighborhoods.geojson', function(neighborhoods){
 
 	mpls_neighborhoods.addTo(map);
 
-  }
-
-);
-
-// d3.json('static/Minneapolis_Neighborhoods.geojson', function(data) {
-
-// 	// Create a new choropleth layer
-// 	geojson = L.choropleth(data, {
-  
-// 	  // Define what  property in the features to use
-// 	  valueProperty: "MHI2016",
-  
-// 	  // Set color scale
-// 	  scale: ["#ffffb2", "#b10026"],
-  
-// 	  // Number of breaks in step range
-// 	  steps: 10,
-  
-// 	  // q for quartile, e for equidistant, k for k-means
-// 	  mode: "q",
-// 	  style: {
-// 		// Border color
-// 		color: "#fff",
-// 		weight: 1,
-// 		fillOpacity: 0.8
-// 	  },
-  
-// 	  // Binding a pop-up to each layer
-// 	  onEachFeature: function(feature, layer) {
-// 		layer.bindPopup("Zip Code: " + feature.properties.ZIP + "<br>Median Household Income:<br>" +
-// 		  "$" + feature.properties.MHI2016);
-// 	  }
-
-
-// fetch('/minneapolis_neighborhoods')
-// 	.then((response) => {
-// 		return response.json();
-// 	})
-// 	.then((myJson) => {
-// 		myJson.forEach(function(neighborhood) {
-// 			console.log(neighborhood.neighborhood)
-// 			console.log(toLatLon(neighborhood.geometry))
-			
-// 			var polygon=L.polygon(neighborhood.geometry, {
-// 				weight: 1,
-// 				fillOpacity: 0.7,
-// 				color: 'red',
-// 				dashArray: '3'
-// 			}).addTo(mpls_neighborhoods)
-// 		mpls_neighborhoods.addTo(map)	
-// 		})	
-// });
+});
 
 var overlays = {
-	"Yelp Scores": yelp_scores,
-	"Google Scores": google_scores,
+	"Yelp/Google Scores":master_scores,
 	"Inspection Scores": health_scores,
 	"Neighborhoods": mpls_neighborhoods
 }
@@ -426,7 +254,8 @@ var overlays = {
 lcontrol = L.control.layers(baseMaps, overlays, { collapsed: false, hideSingleBase: true }).addTo(map);
 setTimeout(() => {
 	setBox("Google Scores", false);
-	document.getElementById("google_legend").style.display = 'none';
+	setBox("Yelp Scores", false);
+	document.getElementById("master_legend").style.display = 'none';
 }, 1000);
 
 map.on('popupopen', function (e) {
@@ -435,6 +264,15 @@ map.on('popupopen', function (e) {
 	px.y -= e.target._popup._container.clientHeight / 2; // find the height of the popup container, divide by 2, subtract from the Y axis of marker location
 	map.panTo(map.unproject(px), { animate: true }); // pan to new center
 });
+
+map.addControl(new mapboxgl.GeolocateControl({
+    positionOptions: {
+        enableHighAccuracy: true
+    },
+    trackUserLocation: true
+}));
+
+
 
 /**
  * 

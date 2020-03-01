@@ -25,8 +25,6 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 # Effectively disables page caching
 # Here's where we define the various application routes ...
 @app.route("/",  methods=['GET', 'POST'])
 def IndexRoute():
-    ''' This function runs when the browser loads the index route. 
-        Note that the html file must be located in a folder called templates. '''
 
     webpage = render_template("index.html")
     return webpage
@@ -102,6 +100,49 @@ def GoogleDataRoute():
     # Return the jsonified result. 
     return jsonify(google_reviews)
 
+@app.route("/master_data", methods=['GET', 'POST'])
+def MasterDataRoute():
+    
+    engine = create_engine(connection_string)
+    base = automap_base()
+    base.prepare(engine, reflect=True)
+    
+    table = base.classes.masterdata
+
+    # Open a session, run the query, and then close the session again
+    session = Session(engine)
+    results = session.query(table.index, table.yelpid, table.name, table.image, table.url, table.latitude, table.longitude, table.address, table.phone, table.categories, table.transactions, table.rating, table.reviews, table.google_name, table.google_id, table.google_rating, table.google_reviews, table.google_price, table.agg_rating, table.total_reviews).all()
+    session.close()
+
+    # Create a list of dictionaries, with each dictionary containing one row from the query. 
+    master_list = []
+    for table.index, table.yelpid, table.name, table.image, table.url, table.latitude, table.longitude, table.address, table.phone, table.categories, table.transactions, table.rating, table.reviews, table.google_name, table.google_id, table.google_rating, table.google_reviews, table.google_price, table.agg_rating, table.total_reviews in results:
+        dict = {}
+        dict["index"] = table.index
+        dict["yelpid"] = table.yelpid
+        dict["name"] = table.name
+        dict["image"] = table.image
+        dict["url"] = table.url
+        dict["latitude"] = table.latitude
+        dict["longitude"] = table.longitude
+        dict["address"] = table.address
+        dict["phone"] = table.phone
+        dict["categories"] = table.categories
+        dict["transactions"] = table.transactions
+        dict["rating"] = table.rating
+        dict["reviews"] = table.reviews
+        dict["google_name"]=table.google_name
+        dict["google_id"]=table.google_id
+        dict["google_rating"]=table.google_rating
+        dict["google_reviews"]=table.google_reviews
+        dict["google_price"]=table.google_price
+        dict["agg_rating"]=table.agg_rating
+        dict["total_reviews"]=table.total_reviews
+        master_list.append(dict)
+
+    # Return the jsonified result. 
+    return jsonify(master_list)
+    
 @app.route("/health_data")
 def HealthDataRoute():
     
@@ -203,12 +244,8 @@ def InspectionDetailRoute(inspection_number):
 
 @app.route("/test")
 def TestRoute():
-    ''' This function returns a simple message, just to guarantee that
-        the Flask server is working. '''
 
     return "This is the test route!"
-
-# This statement is required for Flask to do its job. 
-# Think of it as chocolate cake recipe. 
+ 
 if __name__ == '__main__':
     app.run(debug=True)
