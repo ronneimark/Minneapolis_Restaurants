@@ -1,18 +1,24 @@
-ALTER TABLE masterdata
+ALTER TABLE grandmasterdata
 	ADD PRIMARY KEY (index),
 	ALTER COLUMN index TYPE int,
-	ALTER COLUMN yelpid TYPE varchar,
-	ALTER COLUMN name TYPE varchar,
-	ALTER COLUMN image TYPE varchar,
-	ALTER COLUMN url TYPE varchar,
+	ALTER COLUMN inspect_name TYPE varchar,
+	ALTER COLUMN inspect_address TYPE varchar, 
+	ALTER COLUMN longitude TYPE float,	
 	ALTER COLUMN latitude TYPE float,
-	ALTER COLUMN longitude TYPE float,
-	ALTER COLUMN address TYPE varchar,
-	ALTER COLUMN phone TYPE varchar,
-	ALTER COLUMN categories TYPE varchar[] USING categories::character varying[],
-	ALTER COLUMN transactions TYPE varchar[] USING transactions::character varying[],
-	ALTER COLUMN rating TYPE float,
-	ALTER COLUMN reviews TYPE int,
+	ALTER COLUMN inspectionidnumber TYPE varchar[] USING inspectionidnumber::character varying[],
+	ALTER COLUMN dateofinspection TYPE varchar[] USING dateofinspection::character varying[],
+	ALTER COLUMN inspectionscore TYPE varchar[] USING inspectionscore::character varying[],
+	ALTER COLUMN inspectiontype TYPE varchar[] USING inspectiontype::character varying[],
+	ALTER COLUMN yelp_id TYPE varchar,
+	ALTER COLUMN yelp_name TYPE varchar,
+	ALTER COLUMN yelp_categories TYPE varchar[] USING yelp_categories::character varying[],
+	ALTER COLUMN yelp_transactions TYPE varchar[] USING yelp_transactions::character varying[],
+	ALTER COLUMN yelp_price TYPE varchar,
+	ALTER COLUMN yelp_url TYPE varchar,	
+	ALTER COLUMN yelp_address TYPE varchar,
+	ALTER COLUMN yelp_phone TYPE varchar,	
+	ALTER COLUMN yelp_rating TYPE float,
+	ALTER COLUMN yelp_reviews TYPE int,
 	ALTER COLUMN google_name TYPE varchar,
 	ALTER COLUMN google_id TYPE varchar,
 	ALTER COLUMN google_rating TYPE float,
@@ -21,17 +27,15 @@ ALTER TABLE masterdata
 	ALTER COLUMN agg_rating TYPE float,
 	ALTER COLUMN total_reviews TYPE float;
 
-ALTER TABLE inspectionsdata
-	ADD PRIMARY KEY(index,businessname),
-	ALTER COLUMN index TYPE int,
-	ALTER COLUMN businessname TYPE varchar,
-	ALTER COLUMN fulladdress TYPE varchar,
-	ALTER COLUMN latitude TYPE float,
-	ALTER COLUMN longitude TYPE float,	
-	ALTER COLUMN inspectionidnumber TYPE varchar[] USING inspectionidnumber::character varying[],
-	ALTER COLUMN dateofinspection TYPE varchar[] USING dateofinspection::character varying[],
-	ALTER COLUMN inspectionscore TYPE varchar[] USING inspectionscore::character varying[],
-	ALTER COLUMN inspectiontype TYPE varchar[] USING inspectiontype::character varying[];
+DELETE
+FROM grandmasterdata
+WHERE (agg_rating IS NULL) 
+AND (total_reviews IS NULL);
+
+DELETE
+FROM grandmasterdata
+WHERE (yelp_name IS NULL) 
+AND (google_name IS NULL);
 
 ALTER TABLE inspectionsdetail
 	ADD PRIMARY KEY(index,inspectionidnumber),
