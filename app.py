@@ -29,94 +29,23 @@ def IndexRoute():
     webpage = render_template("index.html")
     return webpage
 
-@app.route("/yelp_data", methods=['GET', 'POST'])
-def YelpDataRoute():
-    
-    engine = create_engine(connection_string)
-    base = automap_base()
-    base.prepare(engine, reflect=True)
-    
-    table = base.classes.yelpdata
-
-    # Open a session, run the query, and then close the session again
-    session = Session(engine)
-    results = session.query(table.index, table.yelpid, table.name, table.image, table.url, table.latitude, table.longitude, table.address, table.phone, table.categories, table.transactions, table.rating, table.reviews).all()
-    session.close()
-
-    # Create a list of dictionaries, with each dictionary containing one row from the query. 
-    yelp_reviews = []
-    for table.index, table.yelpid, table.name, table.image, table.url, table.latitude, table.longitude, table.address, table.phone, table.categories, table.transactions, table.rating, table.reviews in results:
-        dict = {}
-        dict["index"] = table.index
-        dict["yelpid"] = table.yelpid
-        dict["name"] = table.name
-        dict["image"] = table.image
-        dict["url"] = table.url
-        dict["latitude"] = table.latitude
-        dict["longitude"] = table.longitude
-        dict["address"] = table.address
-        dict["phone"] = table.phone
-        dict["categories"] = table.categories
-        dict["transactions"] = table.transactions
-        dict["rating"] = table.rating
-        dict["reviews"] = table.reviews
-        yelp_reviews.append(dict)
-
-    # Return the jsonified result. 
-    return jsonify(yelp_reviews)
-    
-@app.route("/google_data", methods=['GET', 'POST'])
-def GoogleDataRoute():
-    
-    engine = create_engine(connection_string)
-    base = automap_base()
-    base.prepare(engine, reflect=True)
-
-    # Choose the table we wish to use
-    table = base.classes.googledata
-
-    # Open a session, run the query, and then close the session again
-    session = Session(engine)
-    results = session.query(table.index, table.googleplacesid, table.name, table.latitude, table.longitude, table.address, table.rating, table.reviews, table.price, table.icon, table.photos).all()
-    session.close()
-
-    # Create a list of dictionaries, with each dictionary containing one row from the query. 
-    google_reviews = []
-    for table.index, table.googleplacesid, table.name, table.latitude, table.longitude, table.address, table.rating, table.reviews, table.price, table.icon, table.photos in results:
-        dict = {}
-        dict["index"] = table.index
-        dict["googleplacesid"] = table.googleplacesid
-        dict["name"] = table.name
-        dict["latitude"] = table.latitude
-        dict["longitude"] = table.longitude
-        dict["address"] = table.address.rsplit(",",1)[0]
-        dict["rating"] = table.rating
-        dict["reviews"] = table.reviews
-        dict["price"] = table.price
-        dict["icon"] = table.icon
-        dict["photos"] = table.photos
-        google_reviews.append(dict)
-
-    # Return the jsonified result. 
-    return jsonify(google_reviews)
-
-# @app.route("/master_data", methods=['GET', 'POST'])
-# def MasterDataRoute():
+# @app.route("/yelp_data", methods=['GET', 'POST'])
+# def YelpDataRoute():
     
 #     engine = create_engine(connection_string)
 #     base = automap_base()
 #     base.prepare(engine, reflect=True)
     
-#     table = base.classes.masterdata
+#     table = base.classes.yelpdata
 
 #     # Open a session, run the query, and then close the session again
 #     session = Session(engine)
-#     results = session.query(table.index, table.yelpid, table.name, table.image, table.url, table.latitude, table.longitude, table.address, table.phone, table.categories, table.transactions, table.rating, table.reviews, table.google_name, table.google_id, table.google_rating, table.google_reviews, table.google_price, table.agg_rating, table.total_reviews).all()
+#     results = session.query(table.index, table.yelpid, table.name, table.image, table.url, table.latitude, table.longitude, table.address, table.phone, table.categories, table.transactions, table.rating, table.reviews).all()
 #     session.close()
 
 #     # Create a list of dictionaries, with each dictionary containing one row from the query. 
-#     master_list = []
-#     for table.index, table.yelpid, table.name, table.image, table.url, table.latitude, table.longitude, table.address, table.phone, table.categories, table.transactions, table.rating, table.reviews, table.google_name, table.google_id, table.google_rating, table.google_reviews, table.google_price, table.agg_rating, table.total_reviews in results:
+#     yelp_reviews = []
+#     for table.index, table.yelpid, table.name, table.image, table.url, table.latitude, table.longitude, table.address, table.phone, table.categories, table.transactions, table.rating, table.reviews in results:
 #         dict = {}
 #         dict["index"] = table.index
 #         dict["yelpid"] = table.yelpid
@@ -131,18 +60,45 @@ def GoogleDataRoute():
 #         dict["transactions"] = table.transactions
 #         dict["rating"] = table.rating
 #         dict["reviews"] = table.reviews
-#         dict["google_name"]=table.google_name
-#         dict["google_id"]=table.google_id
-#         dict["google_rating"]=table.google_rating
-#         dict["google_reviews"]=table.google_reviews
-#         dict["google_price"]=table.google_price
-#         dict["agg_rating"]=table.agg_rating
-#         dict["total_reviews"]=table.total_reviews
-#         master_list.append(dict)
+#         yelp_reviews.append(dict)
 
 #     # Return the jsonified result. 
-#     return jsonify(master_list)
+#     return jsonify(yelp_reviews)
+    
+# @app.route("/google_data", methods=['GET', 'POST'])
+# def GoogleDataRoute():
+    
+#     engine = create_engine(connection_string)
+#     base = automap_base()
+#     base.prepare(engine, reflect=True)
 
+#     # Choose the table we wish to use
+#     table = base.classes.googledata
+
+#     # Open a session, run the query, and then close the session again
+#     session = Session(engine)
+#     results = session.query(table.index, table.googleplacesid, table.name, table.latitude, table.longitude, table.address, table.rating, table.reviews, table.price, table.icon, table.photos).all()
+#     session.close()
+
+#     # Create a list of dictionaries, with each dictionary containing one row from the query. 
+#     google_reviews = []
+#     for table.index, table.googleplacesid, table.name, table.latitude, table.longitude, table.address, table.rating, table.reviews, table.price, table.icon, table.photos in results:
+#         dict = {}
+#         dict["index"] = table.index
+#         dict["googleplacesid"] = table.googleplacesid
+#         dict["name"] = table.name
+#         dict["latitude"] = table.latitude
+#         dict["longitude"] = table.longitude
+#         dict["address"] = table.address.rsplit(",",1)[0]
+#         dict["rating"] = table.rating
+#         dict["reviews"] = table.reviews
+#         dict["price"] = table.price
+#         dict["icon"] = table.icon
+#         dict["photos"] = table.photos
+#         google_reviews.append(dict)
+
+#     # Return the jsonified result. 
+#     return jsonify(google_reviews)
 
 @app.route("/grandmaster_data", methods=['GET', 'POST'])
 def GrandMasterDataRoute():
@@ -155,29 +111,29 @@ def GrandMasterDataRoute():
 
     # Open a session, run the query, and then close the session again
     session = Session(engine)
-    results = session.query(table.index, table.inspect_name, table.inspect_address, table.longitude, table.latitude, table.inspectionidnumber, table.dateofinspection, table.inspectionscore, table.inspectiontype, table.yelp_id, table.yelp_name, table.yelp_categories, table.yelp_transactions, table.yelp_price, table.yelp_url, table.yelp_address, table.yelp_phone, table.yelp_rating, table.yelp_reviews, table.google_name, table.google_id, table.google_rating, table.google_reviews, table.google_price, table.agg_rating, table.total_reviews).all()
+    results = session.query(table.index, table.inspect_name, table.address, table.inspectionidnumber, table.dateofinspection, table.inspectionscore, table.inspectiontype, table.updated, table.yelp_id, table.yelp_name, table.yelp_url, table.yelp_price, table.latitude, table.longitude, table.yelp_phone, table.yelp_categories, table.yelp_transactions, table.yelp_rating, table.yelp_reviews, table.google_name, table.google_id, table.google_rating, table.google_reviews, table.google_price, table.agg_rating, table.total_reviews).all()
     session.close()
 
     grandmaster_list = []
-    for table.index, table.inspect_name, table.inspect_address, table.longitude, table.latitude, table.inspectionidnumber, table.dateofinspection, table.inspectionscore, table.inspectiontype, table.yelp_id, table.yelp_name, table.yelp_categories, table.yelp_transactions, table.yelp_price, table.yelp_url, table.yelp_address, table.yelp_phone, table.yelp_rating, table.yelp_reviews, table.google_name, table.google_id, table.google_rating, table.google_reviews, table.google_price, table.agg_rating, table.total_reviews in results:
+    for table.index, table.inspect_name, table.address, table.inspectionidnumber, table.dateofinspection, table.inspectionscore, table.inspectiontype, table.updated, table.yelp_id, table.yelp_name, table.yelp_url, table.yelp_price, table.latitude, table.longitude, table.yelp_phone, table.yelp_categories, table.yelp_transactions, table.yelp_rating, table.yelp_reviews, table.google_name, table.google_id, table.google_rating, table.google_reviews, table.google_price, table.agg_rating, table.total_reviews in results:
         dict = {}
         dict["index"] = table.index
         dict["inspect_name"] = table.inspect_name
-        dict["inspect_address"] = table.inspect_address
-        dict["longitude"] = table.longitude
-        dict["latitude"] = table.latitude
+        dict["address"] = table.address.strip(', United States')
         dict["inspectionidnumber"]=table.inspectionidnumber
         dict["dateofinspection"] = table.dateofinspection
         dict["inspectionscore"] = table.inspectionscore
         dict["inspectiontype"] = table.inspectiontype
+        dict["updated"]=table.updated
         dict["yelp_id"] = table.yelp_id
         dict["yelp_name"] = table.yelp_name
+        dict["yelp_url"] = table.yelp_url
+        dict["yelp_price"] = table.yelp_price
+        dict["longitude"] = table.longitude
+        dict["latitude"] = table.latitude
+        dict["yelp_phone"] = table.yelp_phone
         dict["yelp_categories"] = table.yelp_categories
         dict["yelp_transactions"] = table.yelp_transactions
-        dict["yelp_price"] = table.yelp_price
-        dict["yelp_url"] = table.yelp_url
-        dict["yelp_address"] = table.yelp_address
-        dict["yelp_phone"] = table.yelp_phone
         dict["yelp_rating"] = table.yelp_rating
         dict["yelp_reviews"] = table.yelp_reviews
         dict["google_name"]=table.google_name
@@ -192,38 +148,38 @@ def GrandMasterDataRoute():
     # Return the jsonified result. 
     return jsonify(grandmaster_list)
     
-@app.route("/health_data")
-def HealthDataRoute():
+# @app.route("/health_data")
+# def HealthDataRoute():
     
-    #need this in order to refresh the page
-    engine = create_engine(connection_string)
-    base = automap_base()
-    base.prepare(engine, reflect=True)
+#     #need this in order to refresh the page
+#     engine = create_engine(connection_string)
+#     base = automap_base()
+#     base.prepare(engine, reflect=True)
 
-    table = base.classes.inspectionsdata
+#     table = base.classes.inspectionsdata
 
-    # Open a session, run the query, and then close the session again
-    session = Session(engine)
-    results = session.query(table.index, table.businessname, table.inspectionidnumber, table.dateofinspection, table.fulladdress, table.inspectiontype, table.inspectionscore, table.latitude, table.longitude).all()
-    session.close()
+#     # Open a session, run the query, and then close the session again
+#     session = Session(engine)
+#     results = session.query(table.index, table.businessname, table.inspectionidnumber, table.dateofinspection, table.fulladdress, table.inspectiontype, table.inspectionscore, table.latitude, table.longitude).all()
+#     session.close()
 
-    # Create a list of dictionaries, with each dictionary containing one row from the query.
-    health_array = []
-    for table.index, table.businessname, table.inspectionidnumber, table.dateofinspection, table.fulladdress, table.inspectiontype, table.inspectionscore, table.latitude, table.longitude in results:
-        dict = {}
-        dict['index']=table.index
-        dict["businessname"] = table.businessname
-        dict["inspectionidnumber"] = table.inspectionidnumber
-        dict["dateofinspection"] = table.dateofinspection
-        dict["fulladdress"] = table.fulladdress
-        dict["inspectiontype"] = table.inspectiontype
-        dict["inspectionscore"] = table.inspectionscore
-        dict["latitude"] = table.latitude
-        dict["longitude"] = table.longitude
-        health_array.append(dict)
+#     Create a list of dictionaries, with each dictionary containing one row from the query.
+#     health_array = []
+#     for table.index, table.businessname, table.inspectionidnumber, table.dateofinspection, table.fulladdress, table.inspectiontype, table.inspectionscore, table.latitude, table.longitude in results:
+#         dict = {}
+#         dict['index']=table.index
+#         dict["businessname"] = table.businessname
+#         dict["inspectionidnumber"] = table.inspectionidnumber
+#         dict["dateofinspection"] = table.dateofinspection
+#         dict["fulladdress"] = table.fulladdress
+#         dict["inspectiontype"] = table.inspectiontype
+#         dict["inspectionscore"] = table.inspectionscore
+#         dict["latitude"] = table.latitude
+#         dict["longitude"] = table.longitude
+#         health_array.append(dict)
 
-    # Return the jsonified result.
-    return jsonify(health_array)
+#     # Return the jsonified result.
+#     return jsonify(health_array)
 
 @app.route("/inspection_detail/<inspection_number>", methods=['GET', 'POST'])
 def InspectionDetailRoute(inspection_number):

@@ -2,7 +2,7 @@ ALTER TABLE grandmasterdata
 	ADD PRIMARY KEY (index),
 	ALTER COLUMN index TYPE int,
 	ALTER COLUMN inspect_name TYPE varchar,
-	ALTER COLUMN inspect_address TYPE varchar, 
+	ALTER COLUMN address TYPE varchar, 
 	ALTER COLUMN longitude TYPE float,	
 	ALTER COLUMN latitude TYPE float,
 	ALTER COLUMN inspectionidnumber TYPE varchar[] USING inspectionidnumber::character varying[],
@@ -15,7 +15,6 @@ ALTER TABLE grandmasterdata
 	ALTER COLUMN yelp_transactions TYPE varchar[] USING yelp_transactions::character varying[],
 	ALTER COLUMN yelp_price TYPE varchar,
 	ALTER COLUMN yelp_url TYPE varchar,	
-	ALTER COLUMN yelp_address TYPE varchar,
 	ALTER COLUMN yelp_phone TYPE varchar,	
 	ALTER COLUMN yelp_rating TYPE float,
 	ALTER COLUMN yelp_reviews TYPE int,
@@ -25,17 +24,22 @@ ALTER TABLE grandmasterdata
 	ALTER COLUMN google_reviews TYPE int,
 	ALTER COLUMN google_price TYPE int,
 	ALTER COLUMN agg_rating TYPE float,
-	ALTER COLUMN total_reviews TYPE float;
+	ALTER COLUMN total_reviews TYPE int,
+	ALTER COLUMN updated TYPE varchar;
 
-DELETE
+SELECT *
 FROM grandmasterdata
 WHERE (agg_rating IS NULL) 
-AND (total_reviews IS NULL);
+OR (total_reviews IS NULL);
 
-DELETE
+SELECT *
 FROM grandmasterdata
 WHERE (yelp_name IS NULL) 
 AND (google_name IS NULL);
+
+SELECT *
+FROM grandmasterdata
+WHERE (yelp_categories IS NULL);
 
 ALTER TABLE inspectionsdetail
 	ADD PRIMARY KEY(index,inspectionidnumber),
