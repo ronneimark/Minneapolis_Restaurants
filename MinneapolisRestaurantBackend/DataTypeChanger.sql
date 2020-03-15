@@ -27,17 +27,17 @@ ALTER TABLE grandmasterdata
 	ALTER COLUMN total_reviews TYPE int,
 	ALTER COLUMN updated TYPE varchar;
 
-SELECT *
+DELETE
 FROM grandmasterdata
 WHERE (agg_rating IS NULL) 
 OR (total_reviews IS NULL);
 
-SELECT *
+DELETE
 FROM grandmasterdata
 WHERE (yelp_name IS NULL) 
 AND (google_name IS NULL);
 
-SELECT *
+DELETE
 FROM grandmasterdata
 WHERE (yelp_categories IS NULL);
 

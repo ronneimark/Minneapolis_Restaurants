@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 # Import Dependencies
@@ -38,7 +38,7 @@ print('---------------',flush=True)
 
 # # Inspections Data Download
 
-# In[2]:
+# In[ ]:
 
 
 url = 'https://services.arcgis.com/afSMGVsC7QlRK1kZ/arcgis/rest/services/Food_Inspections/FeatureServer/0/query?'
@@ -53,7 +53,7 @@ response = requests.get(full_url)
 data=response.json()['features']
 
 
-# In[3]:
+# In[ ]:
 
 
 inspection_data_list = []
@@ -67,7 +67,7 @@ print('inspection_data_list with needed data has been built.',flush=True)
 print('---------------',flush=True)
 
 
-# In[4]:
+# In[ ]:
 
 
 inspections_df_base = pd.DataFrame(inspection_data_list)
@@ -85,7 +85,7 @@ print('Inspection Detail DataFrame now stored in memory as "inspection_detail"',
 print('---------------',flush=True)
 
 
-# In[5]:
+# In[ ]:
 
 
 grand_master_data=inspections_df_1.groupby(['inspect_name','address','latitude','longitude'],sort=False,as_index=False).aggregate(lambda x: list(x))
@@ -103,12 +103,12 @@ print('---------------',flush=True)
 
 # # Yelp Data
 
-# In[6]:
+# In[ ]:
 
 
 Bad_Categories = [
  'Adult Entertainment','Airport Shuttles','Apartments','Appliances & Repair','Arcades','Art Galleries','Art Museums','Art Schools',
- 'Arts & Crafts','Assisted Living Facilities','Auto Detailing','Auto Insurance','Auto Repair','Axe Throwing','Banks & Credit Unions','Barbers',
+ 'Arts & Crafts','Assisted Living Facilities','Auto Detailing','Auto Insurance','Auto Repair','Axe Throwing','Bakeries','Banks & Credit Unions','Barbers',
  'Beverage Store','Bike Repair/Maintenance','Bikes','Blood & Plasma Donation Centers','Body Shops','Bookstores','Bowling','Building Supplies','Cabinetry',
  'Candy Stores','Car Wash','Caterers','Cardiologists','Chiropractors','Churches','Colleges & Universities','Comedy Clubs',
  'Community Centers','Community Service/Non-Profit','Convenience Stores','Cooking Classes','Cooking Schools','Cosmetic Dentists',
@@ -240,7 +240,7 @@ print(f'There are now {len(grand_master_list)} restaurants remaining in grand_ma
 print('---------------',flush=True)
 
 
-# In[33]:
+# In[ ]:
 
 
 #This code snippet iterates through the categories in each record and creates a list of unique category names.
@@ -262,7 +262,7 @@ for key in sorted_categories:
     sorted_cat_dict.update({key: category_dict[key]})
 
 
-# In[10]:
+# In[ ]:
 
 
 lack_similarity = []
@@ -291,7 +291,7 @@ print('---------------',flush=True)
 
 # #Google Data
 
-# In[11]:
+# In[ ]:
 
 
 print('Appending Google Data to grand_master_list...   This will take some time, as we match each record...',flush=True)
@@ -336,6 +336,16 @@ for item in grand_master_list:
     
     i+=1
 
+print('---------------',flush=True)
+print(f'Google data downloaded and added to grand_master_list...',flush=True)
+
+print(f'There are now {len(grand_master_list)} restaurants remaining in grand_master_list.', flush=True)
+print('---------------',flush=True)
+
+
+# In[ ]:
+
+
 for item in grand_master_list:
     if 'google_rating' not in item:
         no_google.append(item)
@@ -354,15 +364,14 @@ for item in grand_master_list:
 no_google_df =  pd.DataFrame(no_google)
 no_google_df.to_csv('DataFiles/NoGoogle.csv')
 
-print('---------------',flush=True)
-print(f'Google data downloaded and added to grand_master_list...',flush=True)
 print(f'{len(no_google)} records from the inspections list were not found in Google search (rating and reviews).',flush=True)  
 print('Those records have been removed from grand_master_list and saved to a csv called "NoGoogle.csv".',flush=True)
+
 print(f'There are now {len(grand_master_list)} restaurants remaining in grand_master_list.', flush=True)
 print('---------------',flush=True)
 
 
-# In[13]:
+# In[ ]:
 
 
 google_lack_similarity = []
@@ -389,7 +398,7 @@ print(f'There are now {len(grand_master_list)} restaurants left in grand_master_
 print('---------------',flush=True)
 
 
-# In[26]:
+# In[ ]:
 
 
 # Create a new Aggregate Score and Review Count  based on Yelp Rating and Google Rating and add Column to the DataFrame
@@ -421,7 +430,7 @@ print('grand_master_list is now complete, has been saved as csv named "MasterLis
 print('---------------',flush=True)
 
 
-# In[17]:
+# In[ ]:
 
 
 #Postgres username, password, and database name
@@ -434,7 +443,7 @@ dbname = 'Minneapolis_Restaurants'
 postgres_str = f'postgresql://{username}:{password}@{ipaddress}:{port}/{dbname}'
 
 
-# In[27]:
+# In[ ]:
 
 
 # Creates Classes which will serve as the anchor points for our Table, loads table to Postgres and uplads the data
@@ -479,7 +488,7 @@ print(f'Table "grandmasterdata" uploaded to postgreSQL database "Minneapolis_Res
 print('---------------')
 
 
-# In[19]:
+# In[ ]:
 
 
 # Creates Classes which will serve as the anchor points for our Table, loads table to Postgres and uplads the data
