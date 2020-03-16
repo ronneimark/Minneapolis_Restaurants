@@ -6,50 +6,48 @@
 4,buzz mart,sneaky pete's,0.18181818181818182
 5,cafe donuts & cool cups yogurt,starbucks,0.10256410256410256
 6,cafe finspang,mapps coffee,0.24
-7,cafeteria las tapatias,sf badlands,0.24242424242424243
-8,carbon,the basement bar,0.18181818181818182
-9,cooks of crocus hill,red cow - minneapolis,0.1951219512195122
-10,crescent moon bakery,football pizza,0.23529411764705882
-11,"double danger, llc",tilt pinball bar,0.23529411764705882
-12,el taco riendo,costa blanca bistro,0.24242424242424243
-13,exchange nightclub/alibi lounge,mollie stone's,0.17777777777777778
-14,fast eddies pizza,xin wong,0.08
-15,fire box deli,camden tavern and grill,0.16666666666666666
-16,fish bowl poke,ramen kazama,0.15384615384615385
-17,flagsmash,graze,0.14285714285714285
-18,floating world cafe,el nuevo rodeo restaurant,0.18181818181818182
-19,gardens of salonica,spitz,0.16666666666666666
-20,graze provisions and libations/graze,graze,0.24390243902439024
-21,hip pop gourmet popcorn,bluestem bar,0.11428571428571428
-22,ie,ie italian eatery,0.21052631578947367
-23,jalapeno mexican grill,the simple sandwich,0.1951219512195122
-24,jimmy john's,angel food bakery & coffee bar,0.14285714285714285
-25,keys at the foshay bar & grill,prohibition,0.0975609756097561
-26,la michoacana purepecha,steamship coffee & games,0.1702127659574468
-27,le pot,kung fu tea - dinkytown,0.20689655172413793
-28,little caesars pizza,teppanyaki grill & supreme buffet,0.18867924528301888
-29,little caesars pizza,mcdonald's,0.13333333333333333
-30,loose wiles freehouse,parlour,0.21428571428571427
-31,lu's restaurant,graze,0.2
-32,mediterranean deli & cafe,campus cafe - turkish grill,0.23076923076923078
-33,mini olympic cafe,thirsty whale bakery,0.21621621621621623
-34,minnesota mullets,ideal diner,0.21428571428571427
-35,my burger,di napoli cafe,0.17391304347826086
-36,nibbles,zelo,0.18181818181818182
-37,one stop,mr bbq express,0.18181818181818182
-38,penn gas stop,broadway liquor outlet,0.11428571428571428
-39,raag progressive indian restaurant,raag,0.21052631578947367
-40,rebel donut bar,sleepy v's,0.24
-41,saint genevieve,george & the dragon,0.17647058823529413
-42,simpls,glam doll donuts,0.09090909090909091
-43,subway,five guys,0.13333333333333333
-44,taco bell #3371,uptown pizza,0.14814814814814814
-45,taqueria los ocampo,taco taxi,0.21428571428571427
-46,taqueria victor hugo,el chilo tacos,0.23529411764705882
-47,tasty treats and fancy sweets,smoke in the pit,0.2222222222222222
-48,tea house chinese restaurant,legendary spice,0.23255813953488372
-49,the 508,508 bar & restaurant,0.2222222222222222
-50,the southern theater,minneapolis town hall brewery,0.20408163265306123
-51,twin cities vegetable  & fruit,the lynhall,0.14634146341463414
-52,y'all come back saloon,union rooftop,0.17142857142857143
-53,yogurt lab,ben & jerry’s,0.08695652173913043
+7,carbon,the basement bar,0.18181818181818182
+8,cooks of crocus hill,red cow - minneapolis,0.1951219512195122
+9,crescent moon bakery,football pizza,0.23529411764705882
+10,"double danger, llc",tilt pinball bar,0.23529411764705882
+11,el taco riendo,costa blanca bistro,0.24242424242424243
+12,fast eddies pizza,xin wong,0.08
+13,fire box deli,camden tavern and grill,0.16666666666666666
+14,fish bowl poke,ramen kazama,0.15384615384615385
+15,flagsmash,graze,0.14285714285714285
+16,floating world cafe,el nuevo rodeo restaurant,0.18181818181818182
+17,gardens of salonica,spitz,0.16666666666666666
+18,graze provisions and libations/graze,graze,0.24390243902439024
+19,hip pop gourmet popcorn,bluestem bar,0.11428571428571428
+20,ie,ie italian eatery,0.21052631578947367
+21,jalapeno mexican grill,the simple sandwich,0.1951219512195122
+22,jimmy john's,angel food bakery & coffee bar,0.14285714285714285
+23,keys at the foshay bar & grill,prohibition,0.0975609756097561
+24,la michoacana purepecha,steamship coffee & games,0.1702127659574468
+25,le pot,kung fu tea - dinkytown,0.20689655172413793
+26,little caesars pizza,teppanyaki grill & supreme buffet,0.18867924528301888
+27,little caesars pizza,mcdonald's,0.13333333333333333
+28,loose wiles freehouse,parlour,0.21428571428571427
+29,lu's restaurant,graze,0.2
+30,mediterranean deli & cafe,campus cafe - turkish grill,0.23076923076923078
+31,mini olympic cafe,thirsty whale bakery,0.21621621621621623
+32,minnesota mullets,ideal diner,0.21428571428571427
+33,my burger,di napoli cafe,0.17391304347826086
+34,nibbles,zelo,0.18181818181818182
+35,one stop,mr bbq express,0.18181818181818182
+36,penn gas stop,broadway liquor outlet,0.11428571428571428
+37,raag progressive indian restaurant,raag,0.21052631578947367
+38,rebel donut bar,sleepy v's,0.24
+39,saint genevieve,george & the dragon,0.17647058823529413
+40,simpls,glam doll donuts,0.09090909090909091
+41,subway,five guys,0.13333333333333333
+42,taco bell #3371,uptown pizza,0.14814814814814814
+43,taqueria los ocampo,taco taxi,0.21428571428571427
+44,taqueria victor hugo,el chilo tacos,0.23529411764705882
+45,tasty treats and fancy sweets,smoke in the pit,0.2222222222222222
+46,tea house chinese restaurant,legendary spice,0.23255813953488372
+47,the 508,508 bar & restaurant,0.2222222222222222
+48,the southern theater,minneapolis town hall brewery,0.20408163265306123
+49,twin cities vegetable  & fruit,the lynhall,0.14634146341463414
+50,y'all come back saloon,union rooftop,0.17142857142857143
+51,yogurt lab,ben & jerry’s,0.08695652173913043

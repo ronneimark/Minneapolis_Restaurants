@@ -3,6 +3,8 @@ ALTER TABLE grandmasterdata
 	ALTER COLUMN index TYPE int,
 	ALTER COLUMN inspect_name TYPE varchar,
 	ALTER COLUMN address TYPE varchar, 
+	ALTER COLUMN zipcode TYPE varchar,
+	ALTER COLUMN neighborhood TYPE varchar,
 	ALTER COLUMN longitude TYPE float,	
 	ALTER COLUMN latitude TYPE float,
 	ALTER COLUMN inspectionidnumber TYPE varchar[] USING inspectionidnumber::character varying[],

@@ -46,6 +46,34 @@ fetch('/grandmaster_data')
 			ReviewsUnder15percentile: 0
 		};
 
+		var restaurant_list=[]
+		var category_list=[]
+		var neighborhood_list=[]
+		var zipcode_list=[]
+		myJson.forEach(function(d){
+			restaurant_list.push(d.inspect_name);
+			neighborhood_list.push(d.neighborhood);
+			zipcode_list.push(d.zipcode)
+			d.yelp_categories.forEach(function(e) {
+				category_list.push(e)
+			});
+		});
+
+		let categories = category_list.filter((item, i, ar) => ar.indexOf(item) === i);
+		let restaurants = restaurant_list.filter((item, i, ar) => ar.indexOf(item) === i);
+		let zipcodes = zipcode_list.filter((item, i, ar) => ar.indexOf(item) === i);
+		let neighborhoods = neighborhood_list.filter((item, i, ar) => ar.indexOf(item) === i);
+		
+		categories = categories.sort()
+		restaurants = restaurants.sort()
+		zipcodes = zipcodes.sort()
+		neighborhoods=neighborhoods.sort()
+
+		console.log(restaurants);
+		console.log(categories);
+		console.log(zipcodes);
+		console.log(neighborhoods);
+
 		for (i = 0; i < myJson.length; i++) {
 
 			var rating = myJson[i].agg_rating;
