@@ -53,6 +53,10 @@ body,
   margin-right: 10px;
 } */
 
+/* .popup {
+  transform: scale(.5,.5);
+} */
+
 #popup-header {
   background-color:orange;
 }
@@ -95,6 +99,7 @@ body,
   background-color:white;
   border-radius: 5px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  transform: scale(.85,.85);
 }
 
 #legend_table td,tr,th {

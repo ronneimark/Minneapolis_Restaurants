@@ -36,7 +36,6 @@ fetch('/grandmaster_data')
 			Rating3_75: 0,
 			Rating3_5: 0,
 			Rating3_25: 0,
-			Rating3: 0,
 			RatingUnder: 0
 		};
 
@@ -50,6 +49,7 @@ fetch('/grandmaster_data')
 		var category_list=[]
 		var neighborhood_list=[]
 		var zipcode_list=[]
+
 		myJson.forEach(function(d){
 			restaurant_list.push(d.inspect_name);
 			neighborhood_list.push(d.neighborhood);
@@ -86,8 +86,7 @@ fetch('/grandmaster_data')
 			else if (rating >= 3.75) { ratingStatusCode = "Rating3_75"; color = "blue";}
 			else if (rating >= 3.5) { ratingStatusCode = "Rating3_5"; color = "purple";}
 			else if (rating >= 3.25) { ratingStatusCode = "Rating3_25"; color = "black";}
-			else if (rating >= 3.00) { ratingStatusCode = "Rating3"; color = "grey";}
-			else { ratingStatusCode = "RatingUnder"; color = "white" }
+			else { ratingStatusCode = "RatingUnder"; color = "grey" }
 			ratingCount[ratingStatusCode]++;
 
 			if (reviews >= 1105) { reviewsStatusCode = "Reviews15percentile"; icon = 'static/images/marker_' + color + myJson[i].inspectionscore.length + '.png'; }
@@ -109,7 +108,7 @@ fetch('/grandmaster_data')
 			inspections_df += "</tbody></table>"
 
 			marker.push(L.marker([myJson[i].latitude, myJson[i].longitude], { icon: thisIcon }).addTo(map)
-				.bindPopup("<div id='popup-header'><hr><h5><u><strong><center>" + myJson[i].inspect_name + "</center></strong></u></h5><center><strong><i><div style = 'font-size:16px'>" + myJson[i].address + "</div></i></strong></center><center><strong>" + myJson[i].yelp_phone + "</strong><hr></div><center><div style='font-size:16px; color:red';>" + myJson[i].yelp_categories + "</div><br><center><div style='font-size:16px;'><strong>Agg Score: " + myJson[i].agg_rating + " (" + myJson[i].total_reviews + " reviews)</strong></div></center></div><br><table id='popup-details' align='center'><tr><td valign=top width=185 style=\"max-width:185px; min-width:185px; word-wrap:break-word;\"><center><a href='" + myJson[i].yelp_url + "' onClick=\"return popup(this, 'Yelp')\"><div style='font-size:20px'>YELP</div></a></center><center><strong>Rating: " + myJson[i].yelp_rating + " (" + myJson[i].yelp_reviews + " Reviews)</strong></center><center><strong>Price (0-4): </strong>" + myJson[i].yelp_price + "</center><hr style='width:75%; margin-top:0em; margin-bottom:0em;'><center><strong>Transactions: </strong>" + myJson[i].yelp_transactions + "</strong></center></td><td valign=top width=185 style=\"max-width:185px; min-width:185px; word-wrap:break-word;\"><center><a href='https://www.google.com/maps/place/?q=place_id:" + myJson[i].google_id + "' onClick=\"return popup(this, 'Google')\"<div style='font-size:20px'>GOOGLE</div></a></center><center><strong>Rating: " + myJson[i].google_rating + " (" + myJson[i].google_reviews + " Reviews)</strong></center><center><strong>Price (0-4): " + myJson[i].google_price + "</strong></center><strong></td></tr></table><br><center><h6>Inspections Since 2017: " + myJson[i].inspectionscore.length + "</h6></center><center>" + inspections_df + "</center><hr><center><i><b><div style='color:blue;'>Updated " +  myJson[i].updated +"</div></b></i></center>", { keepInView:true, maxWidth: 390, minWidth:390, minHeight:500, maxHeight:525 })
+				.bindPopup("<div id='popup-header'><hr><h5><u><strong><center>" + myJson[i].inspect_name + "</center></strong></u></h5><center><strong><i><div style = 'font-size:16px'>" + myJson[i].address + "</div></i></strong></center><center><strong><i><div style = 'font-size:14px'>Neighborhood: " + myJson[i].neighborhood + "</div></i></strong></center><center><strong><div style = 'font-size:14px'>" + myJson[i].yelp_phone + "</div></strong><hr></div><center><div style='font-size:14px; color:red';>" + myJson[i].yelp_categories + "</div><br><center><div style='font-size:14px;'><strong>Agg Score: " + myJson[i].agg_rating + " (" + myJson[i].total_reviews + " reviews)</strong></div></center></div><br><table id='popup-details' align='center'><tr><td valign=top width=185 style=\"max-width:185px; min-width:185px; word-wrap:break-word;\"><center><a href='" + myJson[i].yelp_url + "' onClick=\"return popup(this, 'Yelp')\"><div style='font-size:16px'>YELP</div></a></center><center><strong>Rating: " + myJson[i].yelp_rating + " (" + myJson[i].yelp_reviews + " Reviews)</strong></center><center><strong>Price (0-4): </strong>" + myJson[i].yelp_price + "</center><hr style='width:75%; margin-top:0em; margin-bottom:0em;'><center><strong>Transactions: </strong>" + myJson[i].yelp_transactions + "</strong></center></td><td valign=top width=185 style=\"max-width:185px; min-width:185px; word-wrap:break-word;\"><center><a href='https://www.google.com/maps/place/?q=place_id:" + myJson[i].google_id + "' onClick=\"return popup(this, 'Google')\"<div style='font-size:16px'>GOOGLE</div></a></center><center><strong>Rating: " + myJson[i].google_rating + " (" + myJson[i].google_reviews + " Reviews)</strong></center><center><strong>Price (0-4): " + myJson[i].google_price + "</strong></center><strong></td></tr></table><br><center><h6>Inspections Since 2017: " + myJson[i].inspectionscore.length + "</h6></center><center>" + inspections_df + "</center><hr><center><i><b><div style='color:blue;'>Updated " +  myJson[i].updated +"</div></b></i></center>", { keepInView:true, maxWidth: 390, minWidth:390, minHeight:500, maxHeight:525 })
 				.addTo(master_scores));
 			master_scores.addTo(map);
 		};
@@ -128,8 +127,7 @@ fetch('/grandmaster_data')
 					"<tr><td><img src='static/images/marker_blue.png',alt='Blue'/></td><td><strong>3.75-4.00</strong></td><td align='right'>(" + ratingCount.Rating3_75 + ")</td></tr>",
 					"<tr><td><img src='static/images/marker_purple.png',alt='Purple'/></td><td><strong>3.50-3.75</strong></td><td align='right'>(" + ratingCount.Rating3_5 + ")</td></tr>",
 					"<tr><td><img src='static/images/marker_black.png',alt='Black'/></td><td><strong>3.25-3.50</strong></td><td align='right'>(" + ratingCount.Rating3_25 + ")</td></tr>",
-					"<tr><td><img src='static/images/marker_grey.png',alt='Grey'/></td><td><strong>3.00-3.25</strong></td><td align='right'>(" + ratingCount.Rating3 + ")</td></tr>",
-					"<tr><td><img src='static/images/marker_white.png',alt='White'/></td><td><strong>0.00-3.00</strong></td><td align='right'>(" + ratingCount.RatingUnder + ")</td></tr>",
+					"<tr><td><img src='static/images/marker_grey.png',alt='Grey'/></td><td><strong>0.00-3.00</strong></td><td align='right'>(" + ratingCount.RatingUnder + ")</td></tr>",
 					// "<tr><td><img src='static/images/marker-icon-2x-grey.png',alt='Big'/></td><td><strong>\>15%ile Reviews</strong></td><td align='right'>(" + reviewCount.Reviews15percentile + ")</td></tr>",
 					// "<tr><td><img src='static/images/marker-icon-grey.png',alt='Small'/></td><td><strong>\<15%ile Reviews</strong></td><td align='right'>(" + reviewCount.ReviewsUnder15percentile + ")</td></tr>",
 					"</table>",
@@ -168,42 +166,13 @@ var mpls_neighborhoods=new L.LayerGroup();
 d3.json('static/Minneapolis_Neighborhoods.geojson', function(neighborhoods){
 	L.geoJson(neighborhoods, {
 		onEachFeature: function(feature, layer) {
-			layer.bindPopup("<h5>"+feature.properties.BDNAME)+"</h5>";
+			layer.bindPopup("<h6>"+feature.properties.BDNAME)+"</h6>";
 		  }
 	}).addTo(mpls_neighborhoods)
 
 	mpls_neighborhoods.addTo(map);
 
-	// var searchControl = new L.Control.Search({
-	// 	layer: featuresLayer,
-	// 	propertyName: 'BDNAME',
-	// 	marker: false,
-	// 	moveToLocation: function(latlng, title, map) {
-	// 		//map.fitBounds( latlng.layer.getBounds() );
-	// 		var zoom = map.getBoundsZoom(latlng.layer.getBounds());
-	// 		  map.setView(latlng, zoom); // access the zoom
-	// 	}
 
-	// 	searchControl.on('search:locationfound', function(e) {
-		
-	// 		//console.log('search:locationfound', );
-		
-	// 		//map.removeLayer(this._markerSearch)
-		
-	// 		e.layer.setStyle({fillColor: '#3f0', color: '#0f0'});
-	// 		if(e.layer._popup)
-	// 			e.layer.openPopup();
-		
-	// 	}).on('search:collapsed', function(e) {
-		
-	// 		featuresLayer.eachLayer(function(layer) {	//restore feature color
-	// 			featuresLayer.resetStyle(layer);
-	// 		});	
-	// 	});
-		
-	// 	map.addControl( searchControl );  //inizialize search control
-
-	// });
 });
 
 var overlays = {
