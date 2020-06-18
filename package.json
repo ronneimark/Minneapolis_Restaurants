@@ -1,0 +1,26 @@
+{
+  "name": "minneapolis_restaurants",
+  "version": "1.0.0",
+  "description": "Project 3",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ronneimark/Minneapolis_Restaurants.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ronneimark/Minneapolis_Restaurants/issues"
+  },
+  "homepage": "https://github.com/ronneimark/Minneapolis_Restaurants#readme",
+  "dependencies": {
+    "bootstrap": "^4.5.0",
+    "jquery": "^3.5.1",
+    "leaflet": "^1.6.0",
+    "popper": "^1.0.1",
+    "leaflet": "^1.6.0"
+  }
+}
